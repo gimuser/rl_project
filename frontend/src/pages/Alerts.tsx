@@ -28,11 +28,15 @@ export function AlertsPage() {
         <label className="select-label">Severity<select value={severity} onChange={(event) => { setSeverity(event.target.value); setPage(1); }}><option value="all">All severities</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></label>
         <button className="button button--quiet" type="button" onClick={() => void alerts.refresh()} disabled={alerts.isRefreshing}>{alerts.isRefreshing ? "Refreshing…" : "Refresh"}</button>
       </section>
-      <QueryState state={alerts} empty={(data) => data.items.length === 0}>
+      <QueryState state={alerts} empty={(data) => data.items.filter(hasValidAlertId).length === 0}>
         {(data) => <AlertsTable alerts={data.items} total={data.total} page={page} onPageChange={setPage} />}
       </QueryState>
     </>
   );
+}
+
+function hasValidAlertId(alert: LiveAlert): boolean {
+  return typeof alert.alert_id === "string" && alert.alert_id.trim().length > 0 && alert.alert_id.trim().toLowerCase() !== "none";
 }
 
 function AlertsTable({
@@ -48,13 +52,13 @@ function AlertsTable({
 }) {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const resolvedPage = Math.min(page, totalPages);
-  const visible = useMemo(() => alerts, [alerts]);
+  const visible = useMemo(() => alerts.filter(hasValidAlertId), [alerts]);
 
   if (visible.length === 0) return <EmptyState title="No live alerts match the current filters" description="Try clearing the search or selecting another severity." />;
 
   return (
     <section className="panel table-panel">
-      <div className="table-panel__summary"><span>{total} live alert{total === 1 ? "" : "s"} returned</span><span>Source values remain human-readable; processed values stay linked for the RL agent.</span></div>
+      <div className="table-panel__summary"><span>{total} live alert{total === 1 ? "" : "s"} returned</span><span>Invalid placeholder records are hidden; only real alert IDs are shown.</span></div>
       <div className="table-scroll"><table className="alerts-table"><thead><tr><th>ID</th><th>Alert</th><th>Severity</th><th>Source</th><th>Agent</th><th>Human review</th><th /></tr></thead><tbody>
         {visible.map((alert) => <tr key={alert.alert_id}>
           <td className="mono">{alert.alert_id}</td>
