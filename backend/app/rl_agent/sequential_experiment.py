@@ -76,10 +76,20 @@ def _run_full_live_cycle(*, run_id: str, champion: dict[str, Any], model_meta: d
         },
     )
 
+    cycle_id = str(cycle.get("cycle_id") or "")
+    if not cycle_id:
+        raise RuntimeError("Live cycle was created without a cycle_id.")
+    seeded = int(cycle.get("alerts", 0) or 0)
+    if seeded != expected:
+        raise RuntimeError(
+            f"FATAL: live cycle seeded {seeded} alerts but expected {expected}."
+        )
+
     result = run_live_inference(
         model_path=str(MODEL_PATH),
         model_name=champion["algorithm"],
         only_uninferred=True,
+        cycle_id=cycle_id,
     )
 
     processed = int(result.get("alerts_processed", 0) or 0)
@@ -89,7 +99,7 @@ def _run_full_live_cycle(*, run_id: str, champion: dict[str, Any], model_meta: d
         raise RuntimeError(
             "FATAL: full live holdout was not processed: "
             f"expected={expected}, considered={considered}, processed={processed}, "
-            f"cycle={cycle.get('cycle_id')}"
+            f"cycle={cycle_id}"
         )
 
     result["expected_live_alerts"] = expected
@@ -393,7 +403,7 @@ def main() -> None:
     print(f"LIVE HUMAN REVIEW   : {live_result['human_review_routed']}")
     print("TEST WAS NOT USED FOR MODEL SELECTION")
     print("LIVE HOLDOUT USED CHAMPION ONLY")
-    print("=" * 78)
+    print("=[78m")
 
 
 if __name__ == "__main__":
