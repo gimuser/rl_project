@@ -3,7 +3,8 @@ from __future__ import annotations
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-from app.services.authoritative_training_control import models, start, status, stop
+from app.services.authoritative_training_control import models, start, status
+from app.services.force_training_stop import stop as force_stop
 
 router = APIRouter(prefix="/api/training-control", tags=["Authoritative Training Control"])
 
@@ -29,4 +30,4 @@ def get_full_training_status():
 
 @router.post("/stop")
 def stop_full_training():
-    return stop()
+    return force_stop()
