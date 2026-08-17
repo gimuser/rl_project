@@ -52,7 +52,7 @@ export function TrainingLive() {
 
   useEffect(() => {
     void refresh();
-    const timer = window.setInterval(() => void refresh(), 2500);
+    const timer = window.setInterval(() => void refresh(), 1500);
     return () => window.clearInterval(timer);
   }, [refresh]);
 
@@ -63,7 +63,6 @@ export function TrainingLive() {
   const live = state?.results?.live_inference;
   const best = comparison?.best;
   const actionDistribution = (live?.action_distribution ?? {}) as Record<string, number>;
-  const actionTotal = Object.values(actionDistribution).reduce((sum, value) => sum + Number(value || 0), 0);
   const liveConsidered = Number(live?.alerts_considered ?? 0);
   const liveProcessed = Number(live?.alerts_processed ?? 0);
   const liveComplete = liveConsidered === LIVE_EXPECTED && liveProcessed === LIVE_EXPECTED;
@@ -72,14 +71,23 @@ export function TrainingLive() {
   const statusText = useMemo(() => {
     if (state?.status === "running") return "TRAINING";
     if (state?.status === "completed") return liveComplete ? "COMPLETED · 80/80 LIVE" : "COMPLETED";
+    if (state?.status === "stopped") return "STOPPED";
     return String(state?.status ?? "IDLE").toUpperCase();
   }, [state?.status, liveComplete]);
 
   const stop = async () => {
+    if (stopping) return;
     setStopping(true);
+    setError("");
     try {
       await stopAuthoritativeFullTraining();
-      await refresh();
+      for (let attempt = 0; attempt < 20; attempt += 1) {
+        const next = await getAuthoritativeFullTrainingStatus();
+        setState(next);
+        if (next.status !== "running") return;
+        await new Promise(resolve => window.setTimeout(resolve, 500));
+      }
+      setError("Stop was requested but the backend still reports the training process as running.");
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -144,7 +152,7 @@ export function TrainingLive() {
           <span>Human review<strong>{live?.human_review_routed ?? "—"}</strong></span>
         </div>
         <p>{liveComplete ? "All 80 real live alerts were processed." : "The live holdout is complete only when all 80 alerts have been considered and processed."}</p>
-        {actionTotal > 0 && <p>Actions: {Object.entries(actionDistribution).map(([action, count]) => `${action} ${count}`).join(" · ")}</p>}
+        {Object.values(actionDistribution).some(Boolean) && <p>Actions: {Object.entries(actionDistribution).map(([action, count]) => `${action} ${count}`).join(" · ")}</p>}
       </article>
     </section>
   </div>;
