@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import csv
 import json
 import os
 import shutil
 from pathlib import Path
 from typing import Any
 
+from app.services.live_cycle_service import start_new_live_cycle
+from app.services.live_inference_service import run_live_inference
 from app.services.model_versioning import ensure_model_version
 
 from .evaluator import evaluate
@@ -48,6 +51,52 @@ def _selection_score(validation: dict[str, Any]) -> float:
         0.70 * float(validation.get("policy_optimality", 0.0))
         + 0.30 * float(validation.get("reward_efficiency", 0.0))
     )
+
+
+def _live_expected_rows() -> int:
+    path = Path(__file__).resolve().parents[3] / "data_alert" / "live_source.csv"
+    if not path.exists():
+        raise FileNotFoundError(f"Live source dataset not found: {path}")
+    with path.open("r", encoding="utf-8", errors="replace", newline="") as handle:
+        return max(0, sum(1 for _ in handle) - 1)
+
+
+def _run_full_live_cycle(*, run_id: str, champion: dict[str, Any], model_meta: dict[str, Any] | None) -> dict[str, Any]:
+    expected = _live_expected_rows()
+    if expected <= 0:
+        raise RuntimeError("Live source dataset contains zero alerts.")
+
+    cycle = start_new_live_cycle(
+        reason="champion_model_full_live_holdout",
+        metadata={
+            "run_id": run_id,
+            "winner": champion["name"],
+            "algorithm": champion["algorithm"],
+            "expected_live_alerts": expected,
+        },
+    )
+
+    result = run_live_inference(
+        model_path=str(MODEL_PATH),
+        model_name=champion["algorithm"],
+        only_uninferred=True,
+    )
+
+    processed = int(result.get("alerts_processed", 0) or 0)
+    considered = int(result.get("alerts_considered", 0) or 0)
+
+    if considered != expected or processed != expected:
+        raise RuntimeError(
+            "FATAL: full live holdout was not processed: "
+            f"expected={expected}, considered={considered}, processed={processed}, "
+            f"cycle={cycle.get('cycle_id')}"
+        )
+
+    result["expected_live_alerts"] = expected
+    result["full_live_holdout"] = True
+    result["cycle"] = cycle
+    result["model_version"] = (model_meta or {}).get("model_version")
+    return result
 
 
 def main() -> None:
@@ -97,18 +146,10 @@ def main() -> None:
             str(config.get("algorithm", name))
         ).name
         info = algorithm_metadata(algorithm)
-        learning_rate = float(
-            config.get("learning_rate", learning_rate_default)
-        )
-        gamma = float(
-            config.get("gamma", gamma_default)
-        )
-        batch_size = int(
-            config.get("batch_size", batch_size_default)
-        )
-        max_updates = int(
-            config.get("max_total_updates", max_updates_default)
-        )
+        learning_rate = float(config.get("learning_rate", learning_rate_default))
+        gamma = float(config.get("gamma", gamma_default))
+        batch_size = int(config.get("batch_size", batch_size_default))
+        max_updates = int(config.get("max_total_updates", max_updates_default))
 
         candidate_path = EXPERIMENTS_DIR / f"{run_id}__{name}.pt"
         training_json = EXPERIMENTS_DIR / f"{run_id}__{name}.training.json"
@@ -176,11 +217,7 @@ def main() -> None:
             reverse=True,
         )
 
-        _json_write(
-            training_json,
-            result,
-        )
-
+        _json_write(training_json, result)
         _json_write(
             COMPARISON_PATH,
             {
@@ -195,7 +232,6 @@ def main() -> None:
             },
         )
 
-        # Persist the current candidate telemetry for the dashboard.
         _json_write(
             TRAIN_METRICS_PATH,
             {
@@ -220,7 +256,6 @@ def main() -> None:
                 "stopping_reason": result.get("stopping_reason"),
             },
         )
-
         del model
 
     if not comparison_records:
@@ -249,7 +284,6 @@ def main() -> None:
         },
     )
 
-    # TEST is evaluated once, after the champion is chosen from validation.
     from .offline_algorithms import build_model
 
     champion_model = build_model(
@@ -281,12 +315,9 @@ def main() -> None:
     _json_write(TEST_METRICS_PATH, final_test)
 
     champion_history_path = EXPERIMENTS_DIR / f"{run_id}__{champion['name']}.training.json"
+    champion_history = {}
     if champion_history_path.exists():
-        champion_history = json.loads(
-            champion_history_path.read_text(encoding="utf-8")
-        )
-    else:
-        champion_history = {}
+        champion_history = json.loads(champion_history_path.read_text(encoding="utf-8"))
 
     _json_write(
         TRAIN_METRICS_PATH,
@@ -317,11 +348,22 @@ def main() -> None:
         },
     )
 
+    # ------------------------------------------------------------------
+    # FINAL LIVE HOLDOUT: process every row in data_alert/live_source.csv.
+    # This is separate from model selection and uses the champion only.
+    # ------------------------------------------------------------------
+    live_result = _run_full_live_cycle(
+        run_id=run_id,
+        champion=champion,
+        model_meta=model_meta,
+    )
+
     champion_record = {
         **champion,
         "status": "CHAMPION",
         "model_version": (model_meta or {}).get("model_version"),
         "test_metrics": final_test,
+        "live_holdout": live_result,
     }
 
     _json_write(
@@ -346,7 +388,11 @@ def main() -> None:
     print(f"TEST INCIDENTS      : {final_test['incidents']:,}")
     print(f"TEST REWARD EFF.    : {final_test['reward_efficiency']:.6f}")
     print(f"TEST OPTIMALITY     : {final_test['policy_optimality']:.6f}")
+    print(f"LIVE EXPECTED       : {live_result['expected_live_alerts']}")
+    print(f"LIVE PROCESSED      : {live_result['alerts_processed']}")
+    print(f"LIVE HUMAN REVIEW   : {live_result['human_review_routed']}")
     print("TEST WAS NOT USED FOR MODEL SELECTION")
+    print("LIVE HOLDOUT USED CHAMPION ONLY")
     print("=" * 78)
 
 
