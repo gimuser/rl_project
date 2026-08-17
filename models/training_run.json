@@ -1,0 +1,11 @@
+{
+  "run_id": "e5c0b873d1d5489fa86524e68ac44338",
+  "status": "stopped",
+  "selected_models": [
+    "double_dqn"
+  ],
+  "started_at": "2026-08-16T22:10:19.372497+00:00",
+  "pid": 111927,
+  "stopped_at": "2026-08-16T22:11:15.054897+00:00",
+  "return_code": -15
+}

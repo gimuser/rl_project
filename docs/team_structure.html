@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Structure d'équipe - RL SOAR Agent</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --card-header: #eef2ff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #dbe4f0;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+    body.dark {
+      --bg: #0f172a;
+      --card: #111827;
+      --card-header: #1f2937;
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --border: #334155;
+      --accent: #60a5fa;
+      --accent-soft: #172554;
+      --shadow: 0 12px 30px rgba(2, 6, 23, 0.35);
+    }
+    body { background: var(--bg); color: var(--text); transition: all .3s ease; font-family: Inter, Segoe UI, Arial, sans-serif; }
+    .container { max-width: 1180px; }
+    .hero { background: linear-gradient(135deg, var(--accent-soft), #ffffff); border: 1px solid var(--border); box-shadow: var(--shadow); border-radius: 1.25rem; padding: 2rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 1rem; box-shadow: var(--shadow); }
+    .card-header { background: var(--card-header); font-weight: 600; border-bottom: 1px solid var(--border); }
+    .badge { font-size: 0.8rem; }
+    .pill { display: inline-block; padding: 0.35rem 0.7rem; background: var(--accent-soft); color: var(--accent); border-radius: 999px; margin-right: .4rem; margin-bottom: .4rem; }
+    .pipeline-step { background: var(--card); border: 1px solid var(--border); border-radius: 0.85rem; padding: 1rem; margin-bottom: 0.7rem; box-shadow: var(--shadow); }
+    .pipeline-arrow { text-align: center; color: var(--accent); font-size: 1.1rem; font-weight: 700; }
+    .theme-toggle { position: fixed; top: 1rem; right: 1rem; z-index: 1000; }
+    pre { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 1rem; border-radius: 0.9rem; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <button class="btn btn-outline-primary theme-toggle" onclick="document.body.classList.toggle('dark');">☀︎ / ☾</button>
+  <div class="container py-5">
+    <h1 class="mb-4">Structure d'équipe - RL Agent pour SOAR</h1>
+    <p class="text-muted">Cadre collaboratif pour un développement organisé, sécurisé et scalable.</p>
+
+    <section class="hero mb-5">
+      <h1 class="mb-3">Structure d'équipe - RL Agent pour SOAR</h1>
+      <p class="mb-0 text-muted">Cadre collaboratif, moderne et clair pour un projet d’agent de triage intelligent et d’optimisation de charge analytique.</p>
+    </section>
+
+    <section class="mb-5">
+      <img src="assets/agent_architecture.svg" alt="Schéma d'architecture du système RL SOAR" class="img-fluid rounded shadow-sm" />
+    </section>
+
+    <section class="mb-5">
+      <h2>Vue d'ensemble du projet</h2>
+      <p>Ce dépôt soutient un agent de reinforcement learning dédié à l’orientiation automatisée des alertes SOAR, à l’optimisation de la charge analytique et à la supervision des opérations de sécurité.</p>
+    </section>
+
+    <section class="mb-5">
+      <h2>Vue d'architecture</h2>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header">Backend</div>
+            <div class="card-body">
+              <p>Contient l'API FastAPI, les pipelines de données, l'environnement RL, les récompenses, la simulation SOC et les services métiers.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header">Frontend</div>
+            <div class="card-body">
+              <p>Fournit un tableau de bord pour suivre l'état des alertes, les métriques et l'activité de l'agent.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-5">
+      <h2>Arbre du dépôt</h2>
+      <pre>
+backend/
+  app/
+    api/
+    data_pipeline/
+    environment/
+    rl_agent/
+    reward/
+    simulation/
+    database/
+    services/
+    monitoring/
+    evaluation/
+    models/
+    utils/
+    schemas/
+frontend/
+data/
+docs/
+scripts/
+tests/
+.github/workflows/
+      </pre>
+    </section>
+
+    <section class="mb-5">
+      <h2>Organisation de l'équipe</h2>
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header">Développeur 1 - Project Manager + Développeur RL</div>
+            <div class="card-body">
+              <p><strong>Branche :</strong> feature/rl-agent</p>
+              <p><strong>Répertoires :</strong> backend/app/rl_agent/</p>
+              <p><strong>Responsabilités :</strong> PPO, DQN, A2C, policy, trainer, replay buffer, checkpoints, inference, tuning.</p>
+              <p><strong>Restrictions :</strong> Aucune modification de la logique métier existante.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header">Développeur 2 - Data Pipeline</div>
+            <div class="card-body">
+              <p><strong>Branche :</strong> feature/data-pipeline</p>
+              <p><strong>Répertoires :</strong> backend/app/data_pipeline/, data/, scripts/preprocess.sh, scripts/seed_database.py</p>
+              <p><strong>Responsabilités :</strong> chargement, nettoyage, feature engineering, validation, export.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header">Développeur 3 - Environnement & Simulation</div>
+            <div class="card-body">
+              <p><strong>Branche :</strong> feature/environment</p>
+              <p><strong>Répertoires :</strong> backend/app/environment/, backend/app/simulation/, backend/app/models/</p>
+              <p><strong>Responsabilités :</strong> Gymnasium, états, actions, épisodes, reset, simulation SOC.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header">Développeur 4 - Reward System</div>
+            <div class="card-body">
+              <p><strong>Branche :</strong> feature/reward-system</p>
+              <p><strong>Répertoires :</strong> backend/app/reward/</p>
+              <p><strong>Responsabilités :</strong> récompenses, config, analyst reward, severity reward, latency reward, false positive reward.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header">Développeur 5 - Backend API</div>
+            <div class="card-body">
+              <p><strong>Branche :</strong> feature/backend-api</p>
+              <p><strong>Répertoires :</strong> backend/app/api/, backend/app/services/, backend/app/schemas/, backend/main.py, backend/app/config/</p>
+              <p><strong>Responsabilités :</strong> FastAPI, endpoints, validation, intégration backend.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header">Développeur 6 - Database & Monitoring</div>
+            <div class="card-body">
+              <p><strong>Branche :</strong> feature/database-monitoring</p>
+              <p><strong>Répertoires :</strong> backend/app/database/, backend/app/monitoring/, logs/</p>
+              <p><strong>Responsabilités :</strong> MongoDB, repositories, logs, métriques, TensorBoard, monitoring.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header">Développeur 7 - Frontend</div>
+            <div class="card-body">
+              <p><strong>Branche :</strong> feature/frontend</p>
+              <p><strong>Répertoires :</strong> frontend/</p>
+              <p><strong>Responsabilités :</strong> dashboard, React, charts, statistiques, UI, API consumption.</p>
+              <p><strong>Restriction :</strong> ne doit jamais accéder directement à la base de données.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-5">
+      <h2>Diagramme Git Flow</h2>
+      <pre>feature/*
+      │
+      ▼
+Pull Request
+      │
+      ▼
+develop
+      │
+      ▼
+main</pre>
+    </section>
+
+    <section class="mb-5">
+      <h2>Conventions de branches</h2>
+      <ul>
+        <li><strong>feature/*</strong> : travail collaboratif par module</li>
+        <li><strong>fix(*)</strong> : correction</li>
+        <li><strong>refactor(*)</strong> : refactoring</li>
+        <li><strong>docs(*)</strong> : documentation</li>
+        <li><strong>test(*)</strong> : tests</li>
+      </ul>
+    </section>
+
+    <section class="mb-5">
+      <h2>Workflow</h2>
+      <ul>
+        <li>Créer une branche par fonctionnalité</li>
+        <li>Ouvrir une PR vers develop</li>
+        <li>Le PM valide la qualité</li>
+        <li>Fusionner après validation</li>
+      </ul>
+    </section>
+
+    <section class="mb-5">
+      <h2>Pipeline détaillé de l'agent</h2>
+      <div class="pipeline-step"><strong>1. Extraction des données</strong><br/>data/ + backend/app/data_pipeline/loader.py → backend/app/data_pipeline/cleaner.py → backend/app/data_pipeline/preprocessor.py</div>
+      <div class="pipeline-arrow">↓</div>
+      <div class="pipeline-step"><strong>2. Structuration des features</strong><br/>backend/app/data_pipeline/feature_engineering.py → backend/app/data_pipeline/encoder.py → backend/app/data_pipeline/normalizer.py → backend/app/data_pipeline/validator.py</div>
+      <div class="pipeline-arrow">↓</div>
+      <div class="pipeline-step"><strong>3. Construction de l'état</strong><br/>backend/app/environment/state_builder.py → backend/app/environment/observation_space.py → backend/app/models/state.py</div>
+      <div class="pipeline-arrow">↓</div>
+      <div class="pipeline-step"><strong>4. Simulation du SOC / environnement</strong><br/>backend/app/environment/gym_env.py → backend/app/simulation/alert_generator.py → backend/app/simulation/incident_generator.py → backend/app/simulation/soc_simulator.py → backend/app/environment/reward_wrapper.py</div>
+      <div class="pipeline-arrow">↓</div>
+      <div class="pipeline-step"><strong>5. Décision de l'agent</strong><br/>backend/app/rl_agent/policy.py → backend/app/rl_agent/ppo.py / dqn.py / a2c.py → backend/app/rl_agent/trainer.py → backend/app/rl_agent/inference.py</div>
+      <div class="pipeline-arrow">↓</div>
+      <div class="pipeline-step"><strong>6. Récompense et feedback</strong><br/>backend/app/reward/reward_function.py → backend/app/reward/severity_reward.py → backend/app/reward/analyst_reward.py → backend/app/reward/latency_reward.py → backend/app/reward/false_positive_reward.py</div>
+      <div class="pipeline-arrow">↓</div>
+      <div class="pipeline-step"><strong>7. API, monitoring et évaluation</strong><br/>backend/app/api/alerts.py / agent.py / training.py / evaluation.py → backend/app/services/ → backend/app/monitoring/logger.py → backend/app/monitoring/metrics.py → backend/app/evaluation/report.py</div>
+    </section>
+  </div>
+</body>
+</html>

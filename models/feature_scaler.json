@@ -1,0 +1,22 @@
+{
+  "IncidentId": {
+    "min": 0.0,
+    "max": 599706.0
+  },
+  "hour": {
+    "min": 0.0,
+    "max": 23.0
+  },
+  "day": {
+    "min": 1.0,
+    "max": 31.0
+  },
+  "month": {
+    "min": 1.0,
+    "max": 12.0
+  },
+  "is_weekend": {
+    "min": 0.0,
+    "max": 1.0
+  }
+}

@@ -1,0 +1,42 @@
+# General ignores
+.git
+.gitignore
+Dockerfile
+docker-compose.override.yml
+.env
+.env.*
+*.log
+npm-debug.log*
+
+# Node & frontend build artifacts
+node_modules
+**/node_modules
+frontend/dist
+frontend/build
+
+# Python & runtime artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+venv*/
+.pytest_cache/
+.mypy_cache/
+.pytype/
+
+# Project artifacts not needed for Docker build
+logs/
+coverage/
+coverage.*
+*.sqlite3
+*.db
+*.db-journal
+
+# IDE and system files
+.vscode/
+*.code-workspace
+.DS_Store
+Thumbs.db

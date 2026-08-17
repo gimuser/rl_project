@@ -1,0 +1,35 @@
+services:
+  mongo:
+    image: mongo:6.0
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    # Do not bind Mongo to the host interface by default to avoid port conflicts.
+    # Backend connects to the mongo service via the Compose network (mongodb://mongo:27017).
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
+    environment:
+      PYTHONUNBUFFERED: "1"
+      MONGO_URI: "mongodb://mongo:27017"
+      DATABASE_NAME: "soar_rl_agent"
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-8081}:80"
+    environment:
+      NODE_ENV: "production"
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:
