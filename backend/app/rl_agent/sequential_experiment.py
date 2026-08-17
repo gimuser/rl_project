@@ -40,10 +40,7 @@ def _run_id() -> str:
 
 def _json_write(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(payload, indent=2, default=str),
-        encoding="utf-8",
-    )
+    path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
 
 
 def _selection_score(validation: dict[str, Any]) -> float:
@@ -79,11 +76,10 @@ def _run_full_live_cycle(*, run_id: str, champion: dict[str, Any], model_meta: d
     cycle_id = str(cycle.get("cycle_id") or "")
     if not cycle_id:
         raise RuntimeError("Live cycle was created without a cycle_id.")
+
     seeded = int(cycle.get("alerts", 0) or 0)
     if seeded != expected:
-        raise RuntimeError(
-            f"FATAL: live cycle seeded {seeded} alerts but expected {expected}."
-        )
+        raise RuntimeError(f"FATAL: live cycle seeded {seeded} alerts but expected {expected}.")
 
     result = run_live_inference(
         model_path=str(MODEL_PATH),
@@ -98,8 +94,7 @@ def _run_full_live_cycle(*, run_id: str, champion: dict[str, Any], model_meta: d
     if considered != expected or processed != expected:
         raise RuntimeError(
             "FATAL: full live holdout was not processed: "
-            f"expected={expected}, considered={considered}, processed={processed}, "
-            f"cycle={cycle_id}"
+            f"expected={expected}, considered={considered}, processed={processed}, cycle={cycle_id}"
         )
 
     result["expected_live_alerts"] = expected
@@ -122,17 +117,27 @@ def main() -> None:
     test_csv = str(split["test_path"])
     validation_ids = split["validation_ids"]
 
-    max_epochs = _int_env("REAL_RL_MAX_EPOCHS", 10)
-    min_epochs = _int_env("REAL_RL_MIN_EPOCHS", 2)
-    patience = _int_env("REAL_RL_PATIENCE", 3)
-    validation_every = _int_env("REAL_RL_EVAL_EVERY", 2)
+    # These defaults are part of the trainer itself, so behavior is identical
+    # whether the process is launched through run_local.sh or directly by the API.
+    max_epochs = _int_env("REAL_RL_MAX_EPOCHS", 4000)
+    min_epochs = _int_env("REAL_RL_MIN_EPOCHS", 20)
+    patience = _int_env("REAL_RL_PATIENCE", 10)
+    validation_every = _int_env("REAL_RL_EVAL_EVERY", 1)
+    min_delta = _float_env("REAL_RL_MIN_DELTA", 1e-3)
     batch_size_default = _int_env("REAL_RL_BATCH_SIZE", 512)
     chunk_size = _int_env("REAL_RL_CHUNK_SIZE", 50_000)
-    max_updates_default = _int_env("REAL_RL_MAX_TOTAL_UPDATES", 25_000)
+    max_updates_default = _int_env("REAL_RL_MAX_TOTAL_UPDATES", 5_000_000)
     learning_rate_default = _float_env("REAL_RL_LR", 1e-3)
     gamma_default = _float_env("REAL_RL_GAMMA", 0.95)
     seed = _int_env("REAL_RL_SEED", 42)
     target_update = _int_env("REAL_RL_TARGET_UPDATE", 1)
+
+    print(f"Max epochs         : {max_epochs}")
+    print(f"Minimum epochs     : {min_epochs}")
+    print(f"Patience           : {patience}")
+    print(f"Validation every   : {validation_every}")
+    print(f"Min delta          : {min_delta}")
+    print(f"Max updates        : {max_updates_default:,}")
 
     configs = _experiment_configs()
     selected_names = [str(c.get("name")) for c in configs]
@@ -152,9 +157,7 @@ def main() -> None:
 
     for index, config in enumerate(configs, start=1):
         name = str(config.get("name") or f"candidate_{index}")
-        algorithm = get_algorithm(
-            str(config.get("algorithm", name))
-        ).name
+        algorithm = get_algorithm(str(config.get("algorithm", name))).name
         info = algorithm_metadata(algorithm)
         learning_rate = float(config.get("learning_rate", learning_rate_default))
         gamma = float(config.get("gamma", gamma_default))
@@ -167,11 +170,13 @@ def main() -> None:
         print("\n" + "=" * 78)
         print(f"MODEL {index}/{len(configs)}: {info['display_name']}")
         print(f"Algorithm           : {algorithm}")
-        print(f"Dataset mode        : hard_alert_streaming")
-        print(f"Train CSV           : {train_csv}")
+        print("Dataset mode        : hard_alert_streaming")
         print(f"Validation incidents: {len(validation_ids):,}")
         print(f"Batch size          : {batch_size}")
         print(f"Chunk size          : {chunk_size}")
+        print(f"Max epochs          : {max_epochs}")
+        print(f"Min epochs          : {min_epochs}")
+        print(f"Patience            : {patience}")
         print(f"Max updates         : {max_updates:,}")
         print("=" * 78)
 
@@ -188,6 +193,7 @@ def main() -> None:
             validation_every=validation_every,
             patience=patience,
             min_epochs=min_epochs,
+            min_delta=min_delta,
             max_total_updates=max_updates,
             chunk_size=chunk_size,
             checkpoint_path=str(candidate_path),
@@ -222,10 +228,7 @@ def main() -> None:
         }
 
         comparison_records.append(candidate)
-        comparison_records.sort(
-            key=lambda x: float(x.get("validation_score", 0.0)),
-            reverse=True,
-        )
+        comparison_records.sort(key=lambda x: float(x.get("validation_score", 0.0)), reverse=True)
 
         _json_write(training_json, result)
         _json_write(
@@ -257,6 +260,11 @@ def main() -> None:
                     "selected_models": selected_names,
                     "data_mode": "hard_alert_streaming",
                     "test_used_for_selection": False,
+                    "max_epochs": max_epochs,
+                    "min_epochs": min_epochs,
+                    "patience": patience,
+                    "validation_every": validation_every,
+                    "min_delta": min_delta,
                 },
                 "metrics": result.get("metrics", []),
                 "best_epoch": result.get("best_epoch"),
@@ -306,11 +314,7 @@ def main() -> None:
     )
     champion_model.load(str(MODEL_PATH))
 
-    final_test = evaluate_streaming(
-        champion_model,
-        test_csv,
-        chunk_size=chunk_size,
-    )
+    final_test = evaluate_streaming(champion_model, test_csv, chunk_size=chunk_size)
     final_test.update(
         {
             "run_id": run_id,
@@ -358,15 +362,7 @@ def main() -> None:
         },
     )
 
-    # ------------------------------------------------------------------
-    # FINAL LIVE HOLDOUT: process every row in data_alert/live_source.csv.
-    # This is separate from model selection and uses the champion only.
-    # ------------------------------------------------------------------
-    live_result = _run_full_live_cycle(
-        run_id=run_id,
-        champion=champion,
-        model_meta=model_meta,
-    )
+    live_result = _run_full_live_cycle(run_id=run_id, champion=champion, model_meta=model_meta)
 
     champion_record = {
         **champion,
@@ -403,7 +399,7 @@ def main() -> None:
     print(f"LIVE HUMAN REVIEW   : {live_result['human_review_routed']}")
     print("TEST WAS NOT USED FOR MODEL SELECTION")
     print("LIVE HOLDOUT USED CHAMPION ONLY")
-    print("=[78m")
+    print("=" * 78)
 
 
 if __name__ == "__main__":
