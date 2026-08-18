@@ -46,6 +46,29 @@ def _install_training_status_telemetry_bridge() -> None:
             if not history:
                 return result
 
+            # The trainer stores the real per-epoch action counts as
+            # sample_action_distribution. The API history normalizer
+            # historically looked only for action_distribution/action_counts,
+            # so the frontend received zeros even though actions were real.
+            raw_records = training_metrics.get("metrics")
+            if isinstance(raw_records, list):
+                by_epoch = {
+                    item.get("epoch"): item
+                    for item in raw_records
+                    if isinstance(item, dict) and item.get("epoch") is not None
+                }
+                for epoch_item in history:
+                    raw = by_epoch.get(epoch_item.get("epoch"))
+                    if not isinstance(raw, dict):
+                        continue
+                    distribution = (
+                        raw.get("sample_action_distribution")
+                        or raw.get("action_distribution")
+                        or raw.get("action_counts")
+                    )
+                    if isinstance(distribution, dict):
+                        epoch_item["action_distribution"] = distribution
+
             results = result.setdefault("results", {})
             training = results.setdefault("training", {})
             training["history"] = history
