@@ -67,7 +67,7 @@ export function TrainingLauncher(){
   }
 
   return <div className="lux-training">
-    <section className="lux-hero"><div><div className="lux-kicker">RL CONTROL ROOM · HARD-DATA MODEL LAB</div><h1>Choose algorithms & training parameters</h1><p>Build the run progressively: select models, configure them one at a time, then review the final training policy before launch.</p></div><div className="lux-hero-actions"><button className="lux-button lux-button--ghost" onClick={toggleAll}>{allSelected?"Clear selection":"Select all 4"}</button></div></section>
+    <section className="lux-hero"><div><div className="lux-kicker">RL CONTROL ROOM · HARD-DATA MODEL LAB</div><h1>Choose algorithms & training parameters</h1><p>Build the run progressively: select models, configure them one at a time, then review the final training policy before launch.</p></div><div className="lux-hero-actions"><button className="lux-button lux-button--ghost" onClick={toggleAll}>{allSelected?"Clear selection":"Select all 4"}</button>{selected.length>0&&<button className="lux-button lux-button--primary" disabled={busy} onClick={()=>void start()}>{busy?"Launching…":`Train selected${selected.length===1?` · ${modelInfo(selected[0]).title}`:` · ${selected.length} models`}`}</button>}</div></section>
     {error&&<div className="lux-alert">{error}</div>}
 
     <section className="lux-card"><div className="lux-card-head"><div><div className="lux-card-label">STEP 1 · ALGORITHM SELECTION</div><h2>{selectionLabel}</h2></div><span className="lux-pill">Hard data · no synthetic fallback</span></div>
