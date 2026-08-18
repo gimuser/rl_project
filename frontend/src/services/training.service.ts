@@ -196,20 +196,20 @@ export type AuthoritativeTrainingStatus = {
 };
 
 export type TrainingStartPayload = {
-  modelNames: string[];
-  training: TrainingGlobalConfig;
-  modelConfigs: TrainingModelConfig[];
-  rewards: RewardConfig;
+  modelNames?: string[];
+  training?: TrainingGlobalConfig;
+  modelConfigs?: TrainingModelConfig[];
+  rewards?: RewardConfig;
 };
 
 export const getAuthoritativeFullTrainingStatus = () =>
   apiRequest<AuthoritativeTrainingStatus>("/api/training-control");
 
-export const startAuthoritativeFullTraining = (payload: TrainingStartPayload) =>
+export const startAuthoritativeFullTraining = (payload: TrainingStartPayload = {}) =>
   apiRequest<{ status: string; message?: string; selected_models?: string[]; run_id?: string }>("/api/training-control", {
     method: "POST",
     body: JSON.stringify({
-      model_names: payload.modelNames,
+      model_names: payload.modelNames ?? ["double_dqn"],
       training: payload.training,
       model_configs: payload.modelConfigs,
       rewards: payload.rewards,
