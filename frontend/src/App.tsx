@@ -11,7 +11,7 @@ import { HistoryPage } from "./pages/History";
 import { LoginPage } from "./pages/Login";
 import { MetricsPage } from "./pages/Metrics";
 import { SettingsPage } from "./pages/Settings";
-import { TrainingLauncher } from "./pages/TrainingLauncher";
+import { TrainingLauncherLiveAccess } from "./pages/TrainingLauncherLiveAccess";
 import { TrainingLive } from "./pages/TrainingLive";
 
 export default function App() {
@@ -23,7 +23,7 @@ export default function App() {
       <Route path="/alerts/:id" element={<AlertDetailsPage />} />
       <Route path="/agent" element={<AgentPage />} />
       <Route path="/decisions" element={<DecisionsPage />} />
-      <Route path="/training" element={<TrainingLauncher />} />
+      <Route path="/training" element={<TrainingLauncherLiveAccess />} />
       <Route path="/training/live" element={<TrainingLive />} />
       <Route path="/analysts" element={<AnalystsPage />} />
       <Route path="/metrics" element={<MetricsPage />} />
