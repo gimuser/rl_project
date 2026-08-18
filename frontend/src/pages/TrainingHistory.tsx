@@ -5,6 +5,8 @@ import "./TrainingLive.css";
 
 const nf = new Intl.NumberFormat("en-US");
 
+type TrainingRunWithTimestamp = TrainingRunSummary & { last_updated_at?: string };
+
 export function TrainingHistory() {
   const [runs, setRuns] = useState<TrainingRunSummary[]>([]);
   const [error, setError] = useState("");
@@ -13,9 +15,10 @@ export function TrainingHistory() {
     getTrainingRuns()
       .then((response) => {
         const ordered = [...(response.runs ?? [])].sort((a, b) => {
-          const ta = Date.parse(String((a as TrainingRunSummary & { last_updated_at?: string }).last_updated_at ?? "")) || 0;
-          const tb = Date.parse(String((b as TrainingRunSummary & { last_updated_at?: string }).last_updated_at ?? "")) || 0;
-          return tb - ta;
+          const ta = Date.parse(String((a as TrainingRunWithTimestamp).last_updated_at ?? "")) || 0;
+          const tb = Date.parse(String((b as TrainingRunWithTimestamp).last_updated_at ?? "")) || 0;
+          if (tb !== ta) return tb - ta;
+          return String(b.run_id).localeCompare(String(a.run_id));
         });
         setRuns(ordered);
       })
