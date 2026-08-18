@@ -25,9 +25,62 @@ const SOURCE_FIELDS = [
   ["SuspicionLevel", "Suspicion Level"],
 ] as const;
 
+const IMPORTANT_SOURCE_FIELDS = new Set([
+  "IncidentGrade",
+  "SuspicionLevel",
+  "MitreTechniques",
+  "ThreatFamily",
+  "Category",
+  "EntityType",
+]);
+
 function sourceValue(alert: LiveAlert, key: string) {
   const value = alert.source?.[key];
   return value === null || value === undefined || value === "" ? "—" : String(value);
+}
+
+function priorityFor(alert: LiveAlert) {
+  const grade = sourceValue(alert, "IncidentGrade").toLowerCase();
+  const suspicion = sourceValue(alert, "SuspicionLevel").toLowerCase();
+
+  if (grade.includes("truepositive") || suspicion.includes("critical") || suspicion.includes("high")) {
+    return {
+      level: "HIGH",
+      label: "High-priority review",
+      color: "#b42318",
+      border: "#ef4444",
+      background: "#fff5f5",
+      soft: "#fee4e2",
+    };
+  }
+  if (grade.includes("falsepositive") || suspicion.includes("medium") || suspicion.includes("suspicious")) {
+    return {
+      level: "MEDIUM",
+      label: "Needs careful review",
+      color: "#a15c00",
+      border: "#f59e0b",
+      background: "#fffaf0",
+      soft: "#fef3c7",
+    };
+  }
+  if (grade.includes("benignpositive") || suspicion.includes("low")) {
+    return {
+      level: "LOW",
+      label: "Lower-risk review",
+      color: "#177245",
+      border: "#22c55e",
+      background: "#f4fbf6",
+      soft: "#dcfce7",
+    };
+  }
+  return {
+    level: "REVIEW",
+    label: "Review context",
+    color: "#245a9a",
+    border: "#60a5fa",
+    background: "#f6faff",
+    soft: "#dbeafe",
+  };
 }
 
 export function AnalystsPage() {
@@ -146,11 +199,26 @@ export function AnalystsPage() {
             <div style={{ display: "grid", gap: 16 }}>
               {data.items.map((alert) => {
                 const disabled = busyAlert === alert.alert_id;
+                const priority = priorityFor(alert);
                 return (
-                  <article key={alert.alert_id} className="panel" style={{ margin: 0, background: "#fbfdff" }}>
+                  <article
+                    key={alert.alert_id}
+                    className="panel"
+                    style={{
+                      margin: 0,
+                      background: priority.background,
+                      border: `2px solid ${priority.border}`,
+                      boxShadow: `0 0 0 3px ${priority.soft}`,
+                    }}
+                  >
                     <div className="panel__header">
                       <div>
-                        <p className="eyebrow">LIVE ALERT · SOURCE RECORD</p>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 6 }}>
+                          <p className="eyebrow" style={{ margin: 0 }}>LIVE ALERT · SOURCE RECORD</p>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 9px", borderRadius: 999, background: priority.soft, color: priority.color, fontSize: 11, fontWeight: 900, letterSpacing: ".07em" }}>
+                            {priority.level} · {priority.label}
+                          </span>
+                        </div>
                         <h2>{alert.alert_id} · Incident {alert.incident_id}</h2>
                         <p className="muted">Received {formatDateTime(alert.timestamp)} · Status {alert.status}</p>
                       </div>
@@ -161,12 +229,30 @@ export function AnalystsPage() {
                     </div>
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 10 }}>
-                      {SOURCE_FIELDS.map(([key, label]) => (
-                        <div key={key} style={{ padding: "10px 12px", border: "1px solid #dfe6ef", borderRadius: 10, background: "#fff" }}>
-                          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", color: "#8191a4", marginBottom: 5 }}>{label}</div>
-                          <div style={{ color: "#17233b", fontWeight: 700, fontSize: 13, wordBreak: "break-word" }}>{sourceValue(alert, key)}</div>
-                        </div>
-                      ))}
+                      {SOURCE_FIELDS.map(([key, label]) => {
+                        const important = IMPORTANT_SOURCE_FIELDS.has(key);
+                        return (
+                          <div
+                            key={key}
+                            style={{
+                              position: "relative",
+                              padding: important ? "12px 13px" : "10px 12px",
+                              border: `1px solid ${important ? priority.border : "#dfe6ef"}`,
+                              borderRadius: 10,
+                              background: important ? "rgba(255,255,255,.82)" : "#fff",
+                              boxShadow: important ? `inset 3px 0 0 ${priority.border}` : "none",
+                            }}
+                          >
+                            <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "center", fontSize: 10, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", color: important ? priority.color : "#8191a4", marginBottom: 5 }}>
+                              <span>{label}</span>
+                              {important && <span style={{ fontSize: 9, fontWeight: 900 }}>KEY</span>}
+                            </div>
+                            <div style={{ color: important ? "#17233b" : "#344054", fontWeight: important ? 800 : 700, fontSize: important ? 14 : 13, wordBreak: "break-word" }}>
+                              {sourceValue(alert, key)}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10, marginTop: 12 }}>
