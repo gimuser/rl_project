@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
 import { ToastProvider } from "./components/ui/ToastProvider";
 import { TrainingStopOverlay } from "./components/training/TrainingStopOverlay";
+import { ChartHoverTooltip } from "./components/training/ChartHoverTooltip";
 import { AgentPage } from "./pages/Agent";
 import { AlertDetailsPage } from "./pages/AlertDetails";
 import { AlertsPage } from "./pages/Alerts";
@@ -18,7 +19,7 @@ import { TrainingLive } from "./pages/TrainingLive";
 import { TrainingRunViewer } from "./pages/TrainingRunViewer";
 
 export default function App() {
-  return <ToastProvider><TrainingStopOverlay /><Routes>
+  return <ToastProvider><TrainingStopOverlay /><ChartHoverTooltip /><Routes>
     <Route path="/login" element={<LoginPage />} />
     <Route element={<AppLayout />}>
       <Route path="/dashboard" element={<DashboardPage />} />
