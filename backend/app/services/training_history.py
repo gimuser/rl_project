@@ -123,31 +123,101 @@ def list_runs() -> list[dict[str, Any]]:
     return sorted(runs, key=lambda item: str(item.get("archived_at") or item.get("run_id") or ""), reverse=True)
 
 
+def _status_shape(run_id: str, source: str, training: dict[str, Any], evaluation: dict[str, Any], comparison: dict[str, Any], inference: dict[str, Any], run_state: dict[str, Any], progress: dict[str, Any], manifest: dict[str, Any] | None = None) -> dict[str, Any]:
+    config = training.get("config") if isinstance(training.get("config"), dict) else {}
+    history = _history_from_metrics(training)
+    last = history[-1] if history else {}
+    status = str(run_state.get("status") or ("completed" if history else "idle"))
+    if status == "running":
+        message = f"Training run {run_id} is running."
+    else:
+        message = "Persisted training results available."
+
+    training_view = {
+        "run_id": run_id,
+        "model_name": config.get("model_name"),
+        "algorithm": config.get("algorithm"),
+        "display_name": config.get("display_name"),
+        "selected_models": config.get("selected_models", []),
+        "learning_rate": config.get("learning_rate"),
+        "gamma": config.get("gamma"),
+        "epochs": config.get("epochs", config.get("max_epochs")),
+        "actual_epochs": training.get("actual_epochs", last.get("epoch")),
+        "min_epochs": config.get("min_epochs"),
+        "patience": config.get("patience"),
+        "min_delta": config.get("min_delta"),
+        "validation_every": config.get("validation_every"),
+        "batch_size": config.get("batch_size"),
+        "chunk_size": config.get("chunk_size"),
+        "hidden_dim": config.get("hidden_dim"),
+        "target_update": config.get("target_update"),
+        "updates_per_epoch": training.get("updates_per_full_pass") or last.get("updates_per_epoch_full_pass"),
+        "max_total_updates": training.get("max_total_updates"),
+        "total_updates_used": training.get("total_updates_used"),
+        "policy_reward": last.get("policy_reward", last.get("average_reward")),
+        "oracle_average_reward": last.get("oracle_average_reward"),
+        "reward_efficiency": last.get("reward_efficiency"),
+        "validation": last.get("validation"),
+        "validation_score": last.get("validation_score"),
+        "best_epoch": training.get("best_epoch", last.get("best_epoch")),
+        "stopping_reason": training.get("stopping_reason") or last.get("stopping_reason"),
+        "history": history,
+        "progress": progress,
+    }
+
+    return {
+        "status": status,
+        "message": message,
+        "started_at": run_state.get("started_at"),
+        "pid": run_state.get("pid"),
+        "run_id": run_id,
+        "results": {
+            "source": source,
+            "run_id": run_id,
+            "training": training_view,
+            "comparison": comparison,
+            "evaluation": {
+                "samples": evaluation.get("rows", evaluation.get("test_rows")),
+                "throughput_rows_per_second": evaluation.get("throughput_rows_per_second"),
+                "average_reward": evaluation.get("average_reward"),
+                "oracle_average_reward": evaluation.get("oracle_average_reward"),
+                "policy_optimality": evaluation.get("policy_optimality"),
+                "reward_efficiency": evaluation.get("reward_efficiency"),
+                "reward_regret": evaluation.get("reward_regret"),
+                "action_distribution": evaluation.get("action_distribution"),
+                "per_class": evaluation.get("per_class"),
+            },
+            "live_inference": inference,
+            "manifest": manifest,
+        },
+    }
+
+
 def load_run(run_id: str) -> dict[str, Any] | None:
     current_id = _run_id_from_current()
     if current_id == run_id:
-        return {
-            "run_id": run_id,
-            "source": "current",
-            "training": _load(TRAIN_METRICS),
-            "evaluation": _load(TEST_METRICS),
-            "comparison": _load(COMPARISON),
-            "live_inference": _load(INFERENCE),
-            "run_state": _load(RUN_STATE),
-            "progress": _load(PROGRESS),
-        }
+        return _status_shape(
+            run_id,
+            "current",
+            _load(TRAIN_METRICS),
+            _load(TEST_METRICS),
+            _load(COMPARISON),
+            _load(INFERENCE),
+            _load(RUN_STATE),
+            _load(PROGRESS),
+        )
 
     directory = RUNS_DIR / run_id
     if not directory.exists():
         return None
-    return {
-        "run_id": run_id,
-        "source": "historical",
-        "training": _load(directory / "training_metrics.json"),
-        "evaluation": _load(directory / "real_test_metrics.json"),
-        "comparison": _load(directory / "model_comparison.json"),
-        "live_inference": _load(directory / "live_inference.json"),
-        "run_state": _load(directory / "training_run.json"),
-        "progress": _load(directory / "training_progress.json"),
-        "manifest": _load(directory / "manifest.json"),
-    }
+    return _status_shape(
+        run_id,
+        "historical",
+        _load(directory / "training_metrics.json"),
+        _load(directory / "real_test_metrics.json"),
+        _load(directory / "model_comparison.json"),
+        _load(directory / "live_inference.json"),
+        _load(directory / "training_run.json"),
+        _load(directory / "training_progress.json"),
+        _load(directory / "manifest.json"),
+    )
