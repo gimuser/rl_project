@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 from pathlib import Path
 
 import numpy as np
@@ -34,8 +35,13 @@ def _read_ids(path: Path, chunksize: int = 100_000) -> set[str]:
 
 
 def _row_count(path: Path) -> int:
-    with path.open("rb") as handle:
-        return max(0, sum(1 for _ in handle) - 1)
+    result = subprocess.run(
+        ["wc", "-l", str(path)],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return max(0, int(result.stdout.strip().split()[0]) - 1)
 
 
 def _read_authoritative_incident_ids(path: Path, label: str) -> set[str]:
@@ -60,34 +66,21 @@ def _fallback_read_processed_ids(path: Path, label: str) -> set[str]:
 
 
 def prepare_data_split() -> dict:
-    """Prepare incident-disjoint TRAIN/VALIDATION/TEST without rescanning huge CSVs.
-
-    The cleaned incident-level files are authoritative for the incident split.
-    The multi-million-row processed CSVs remain the actual alert-level sources.
-    """
+    """Prepare incident-disjoint TRAIN/VALIDATION/TEST without full-dataframe load."""
     if not TRAIN_PATH.exists():
         raise FileNotFoundError(TRAIN_PATH)
     if not TEST_PATH.exists():
         raise FileNotFoundError(TEST_PATH)
 
-    print(
-        "[HARD SPLIT] using authoritative incident-level split files",
-        flush=True,
-    )
+    print("[HARD SPLIT] using authoritative incident-level split files", flush=True)
 
     if INCIDENT_TRAIN_PATH.exists():
-        train_ids = _read_authoritative_incident_ids(
-            INCIDENT_TRAIN_PATH,
-            "train_incident.csv",
-        )
+        train_ids = _read_authoritative_incident_ids(INCIDENT_TRAIN_PATH, "train_incident.csv")
     else:
         train_ids = _fallback_read_processed_ids(TRAIN_PATH, "TRAIN")
 
     if INCIDENT_TEST_PATH.exists():
-        test_ids = _read_authoritative_incident_ids(
-            INCIDENT_TEST_PATH,
-            "test_incident.csv",
-        )
+        test_ids = _read_authoritative_incident_ids(INCIDENT_TEST_PATH, "test_incident.csv")
     else:
         test_ids = _fallback_read_processed_ids(TEST_PATH, "TEST")
 
@@ -99,9 +92,7 @@ def prepare_data_split() -> dict:
     print("[HARD SPLIT] checking TRAIN/TEST incident overlap", flush=True)
     overlap = train_ids & test_ids
     if overlap:
-        raise RuntimeError(
-            f"FATAL: TRAIN/TEST incident overlap detected: {len(overlap):,}"
-        )
+        raise RuntimeError(f"FATAL: TRAIN/TEST incident overlap detected: {len(overlap):,}")
     print("[HARD SPLIT] TRAIN/TEST incident overlap: 0", flush=True)
 
     ratio = float(os.getenv("REAL_RL_TRAIN_RATIO_WITHIN_TRAIN_VAL", "0.80"))
@@ -121,9 +112,7 @@ def prepare_data_split() -> dict:
 
     val_test_overlap = validation_ids & test_ids
     if val_test_overlap:
-        raise RuntimeError(
-            f"FATAL: validation/TEST incident overlap: {len(val_test_overlap):,}"
-        )
+        raise RuntimeError(f"FATAL: validation/TEST incident overlap: {len(val_test_overlap):,}")
 
     print(
         f"[HARD SPLIT] model-train incidents={len(model_train_ids):,} "
@@ -137,13 +126,12 @@ def prepare_data_split() -> dict:
         "\n".join(sorted(validation_ids)) + "\n",
         encoding="utf-8",
     )
-
     (RL_DATA / "train_model_incidents.txt").write_text(
         "\n".join(sorted(model_train_ids)) + "\n",
         encoding="utf-8",
     )
 
-    print("[HARD SPLIT] counting processed alert rows", flush=True)
+    print("[HARD SPLIT] fast row counts via wc -l", flush=True)
     train_alert_rows = _row_count(TRAIN_PATH)
     test_alert_rows = _row_count(TEST_PATH)
 
@@ -172,10 +160,7 @@ def prepare_data_split() -> dict:
         "test_used_for_model_selection": False,
     }
 
-    SPLIT_REPORT.write_text(
-        json.dumps(report, indent=2),
-        encoding="utf-8",
-    )
+    SPLIT_REPORT.write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     print("=" * 78)
     print("HARD-DATA SPLIT READY")
