@@ -51,6 +51,20 @@ def _seed_paths() -> tuple[Path, Path, Path]:
     return base / "live_source.csv", base / "live_processed.csv", base / "live_mapping.csv"
 
 
+def _field(item: dict[str, Any], *names: str) -> Any:
+    for name in names:
+        if name in item and item[name] not in (None, "", "nan", "NaN"):
+            return item[name]
+    return None
+
+
+def _alert_id(item: dict[str, Any]) -> str | None:
+    value = _field(item, "alert_id", "AlertId", "ALERT_ID", "AlertID")
+    if value is None:
+        return None
+    return str(value).strip()
+
+
 def ensure_indexes() -> None:
     alerts_collection.create_index("alert_id", unique=True)
     alerts_collection.create_index([("timestamp", -1)])
@@ -80,25 +94,52 @@ def seed_live_alerts(force: bool = False) -> dict[str, Any]:
     source = _records(source_path)
     processed = _records(processed_path)
     mapping = _records(mapping_path)
-    processed_by_id = {str(item.get("alert_id")): item for item in processed}
-    mapping_by_id = {str(item.get("alert_id")): item for item in mapping}
+
+    processed_by_id = {}
+    for item in processed:
+        key = _alert_id(item)
+        if key:
+            processed_by_id[key] = item
+
+    mapping_by_id = {}
+    for item in mapping:
+        key = _alert_id(item)
+        if key:
+            mapping_by_id[key] = item
+
     now = utc_now()
     docs: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
 
     for item in source:
-        alert_id = str(item.get("alert_id"))
+        alert_id = _alert_id(item)
+        if not alert_id:
+            raise ValueError("Live source contains an alert without a valid AlertId/alert_id")
+        if alert_id in seen_ids:
+            raise ValueError(f"Live source contains duplicate alert ID: {alert_id}")
+        seen_ids.add(alert_id)
+
         source_payload = dict(item)
         source_payload.pop("alert_id", None)
-        raw_suspicion = source_payload.get("SuspicionLevel")
+        source_payload.pop("AlertId", None)
+        source_payload.pop("ALERT_ID", None)
+        source_payload.pop("AlertID", None)
+
+        incident_id = _field(item, "incident_id", "IncidentId", "INCIDENT_ID")
+        timestamp = _field(item, "timestamp", "Timestamp")
+        category = _field(item, "category", "Category") or "Security alert"
+        threat_family = _field(item, "threat_family", "ThreatFamily") or "Unknown"
+        raw_suspicion = _field(item, "suspicion_level", "SuspicionLevel")
         severity = str(raw_suspicion) if raw_suspicion not in (None, "", "Unknown") else "medium"
+
         docs.append(
             {
                 "alert_id": alert_id,
-                "incident_id": source_payload.get("IncidentId"),
-                "timestamp": source_payload.get("Timestamp"),
+                "incident_id": incident_id,
+                "timestamp": timestamp,
                 "status": "WAITING_INFERENCE",
                 "severity": severity,
-                "title": f"{source_payload.get('Category', 'Security alert')} / {source_payload.get('LastVerdict', 'Unknown')}",
+                "title": f"{category} / {threat_family}",
                 "source": source_payload,
                 "processed": processed_by_id.get(alert_id, {}),
                 "lineage": mapping_by_id.get(alert_id, {}),
@@ -120,8 +161,11 @@ def seed_live_alerts(force: bool = False) -> dict[str, Any]:
             }
         )
 
+    if len(docs) != 80:
+        raise ValueError(f"Live holdout must contain exactly 80 alerts; found {len(docs)}")
+
     if docs:
-        alerts_collection.insert_many(docs)
+        alerts_collection.insert_many(docs, ordered=True)
 
     analysts = [
         {"analyst_id": "SA", "name": "SOC Analyst", "role": "Supervision", "capacity": 10, "active": True},
