@@ -227,8 +227,16 @@ export const getAuthoritativeFullTrainingStatus = (runId?: string | null) => {
 export const getTrainingRuns = () =>
   apiRequest<{ runs: TrainingRunSummary[] }>("/api/training-control/runs");
 
+export const archiveCurrentTrainingRun = () =>
+  apiRequest<{ status: string; run_id?: string | null }>("/api/training-control/runs/archive-current", { method: "POST" });
+
 export const startAuthoritativeFullTraining = async (payload: TrainingStartPayload = {}) => {
   try {
+    // Snapshot a completed/stopped current run before the live files are replaced.
+    // If a run is active, this endpoint safely returns 409 and the normal start
+    // request below preserves the existing single-run protection.
+    try { await archiveCurrentTrainingRun(); } catch { /* active run or nothing to archive */ }
+
     return await apiRequest<{
       status: string;
       message?: string;
