@@ -51,6 +51,83 @@ def _write_progress(path: Path, payload: dict) -> None:
     tmp.replace(path)
 
 
+def _persist_training_metrics(
+    path: Path,
+    *,
+    run_id: str | None,
+    algorithm_info: dict,
+    epochs: int,
+    actual_epochs: int,
+    batch_size: int,
+    learning_rate: float,
+    gamma: float,
+    hidden_dim: int,
+    validation_every: int,
+    patience: int,
+    min_epochs: int,
+    min_delta: float,
+    chunk_size: int,
+    max_total_updates: int,
+    updates_per_full_pass: int,
+    train_rows: int,
+    metrics: list[dict],
+    best_epoch: int,
+    best_validation: dict | None,
+    total_updates: int,
+    stopping_reason: str | None,
+    threads: int,
+) -> None:
+    """Persist the currently completed epoch history atomically.
+
+    This file is intentionally updated after every completed epoch so the API
+    and frontend can display historical telemetry while a long candidate is
+    still training. The final candidate result may overwrite it later with the
+    same schema; no training behavior depends on this telemetry write.
+    """
+    payload = {
+        "run_id": run_id,
+        "config": {
+            **algorithm_info,
+            "model_name": algorithm_info["display_name"],
+            "algorithm": algorithm_info["algorithm"],
+            "epochs": epochs,
+            "actual_epochs": actual_epochs,
+            "batch_size": batch_size,
+            "learning_rate": learning_rate,
+            "gamma": gamma,
+            "hidden_dim": hidden_dim,
+            "validation_every": validation_every,
+            "patience": patience,
+            "min_epochs": min_epochs,
+            "min_delta": min_delta,
+            "chunk_size": chunk_size,
+            "max_total_updates": max_total_updates,
+            "updates_per_full_pass": updates_per_full_pass,
+            "dataset_rows": train_rows,
+            "features": MODEL_FEATURES,
+            "incident_id": INCIDENT_ID,
+            "target": TARGET,
+            "real_data": True,
+            "synthetic_data": False,
+            "data_mode": "hard_alert_streaming",
+            "one_step_contextual": True,
+            "representative_incident_training": False,
+            "test_used_for_selection": False,
+            "threads": threads,
+        },
+        "metrics": metrics,
+        "best_epoch": best_epoch,
+        "best_validation": best_validation,
+        "actual_epochs": actual_epochs,
+        "total_updates_used": total_updates,
+        "updates_per_full_pass": updates_per_full_pass,
+        "max_total_updates": max_total_updates,
+        "stopping_reason": stopping_reason,
+        "telemetry_persisted_through_epoch": actual_epochs,
+    }
+    _write_progress(path, payload)
+
+
 def _iter_batches(
     csv_path: str | Path,
     *,
@@ -285,7 +362,14 @@ def train_streaming(
             str(Path(train_csv).resolve().parents[2] / "models" / "training_progress.json"),
         )
     )
+    metrics_path = Path(
+        os.getenv(
+            "REAL_RL_TRAIN_METRICS_PATH",
+            str(progress_path.parent / "training_metrics.json"),
+        )
+    )
     chunks_total = math.ceil(train_rows / chunk_size)
+    run_id = os.getenv("REAL_RL_RUN_ID")
 
     model = build_model(
         algorithm,
@@ -495,6 +579,32 @@ def train_streaming(
             if epochs_without_improvement >= patience:
                 stopping_reason = "validation_patience_exhausted"
                 row["stopping_reason"] = stopping_reason
+
+        _persist_training_metrics(
+            metrics_path,
+            run_id=run_id,
+            algorithm_info=algorithm_info,
+            epochs=epochs,
+            actual_epochs=epoch,
+            batch_size=batch_size,
+            learning_rate=learning_rate,
+            gamma=gamma,
+            hidden_dim=hidden_dim,
+            validation_every=validation_every,
+            patience=patience,
+            min_epochs=min_epochs,
+            min_delta=min_delta,
+            chunk_size=chunk_size,
+            max_total_updates=update_budget,
+            updates_per_full_pass=updates_per_full_pass,
+            train_rows=train_rows,
+            metrics=metrics,
+            best_epoch=best_epoch,
+            best_validation=best_validation,
+            total_updates=total_updates,
+            stopping_reason=stopping_reason if row["stopping_reason"] else None,
+            threads=threads,
+        )
 
         _write_progress(progress_path, {
             "status": "running",
