@@ -8,7 +8,7 @@ import { formatDateTime, formatDecimal, formatNumber } from "../utils/format";
 import type { LiveAlert } from "../types/domain";
 
 const CURRENT_ANALYST = "SA";
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 2;
 
 const SOURCE_FIELDS = [
   ["IncidentId", "Incident ID"],
@@ -48,15 +48,15 @@ function priorityFor(alert: LiveAlert) {
   const grade = sourceValue(alert, "IncidentGrade").toLowerCase();
   const suspicion = sourceValue(alert, "SuspicionLevel").toLowerCase();
   if (grade.includes("truepositive") || suspicion.includes("critical") || suspicion.includes("high")) {
-    return { level: "HIGH", label: "High-priority review", color: "#b42318", border: "#ef4444", background: "#fff5f5", soft: "#fee4e2" };
+    return { level: "HIGH", label: "High-priority review", color: "#b42318", border: "#ef4444", background: "#fff5f5", soft: "#fee4e2", rank: 0 };
   }
   if (grade.includes("falsepositive") || suspicion.includes("medium") || suspicion.includes("suspicious")) {
-    return { level: "MEDIUM", label: "Needs careful review", color: "#a15c00", border: "#f59e0b", background: "#fffaf0", soft: "#fef3c7" };
+    return { level: "MEDIUM", label: "Needs careful review", color: "#a15c00", border: "#f59e0b", background: "#fffaf0", soft: "#fef3c7", rank: 1 };
   }
   if (grade.includes("benignpositive") || suspicion.includes("low")) {
-    return { level: "LOW", label: "Lower-risk review", color: "#177245", border: "#22c55e", background: "#f4fbf6", soft: "#dcfce7" };
+    return { level: "LOW", label: "Lower-risk review", color: "#177245", border: "#22c55e", background: "#f4fbf6", soft: "#dcfce7", rank: 2 };
   }
-  return { level: "REVIEW", label: "Review context", color: "#245a9a", border: "#60a5fa", background: "#f6faff", soft: "#dbeafe" };
+  return { level: "REVIEW", label: "Review context", color: "#245a9a", border: "#60a5fa", background: "#f6faff", soft: "#dbeafe", rank: 3 };
 }
 
 function Detail({ label, value }: { label: string; value: string }) {
@@ -72,11 +72,17 @@ export function AnalystsPage() {
   const [page, setPage] = useState(1);
 
   const pendingItems = pending.data?.items ?? [];
-  const actionItems = actions.data?.items ?? [];
-  const totalPages = Math.max(1, Math.ceil(pendingItems.length / PAGE_SIZE));
-  const pageItems = pendingItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const pageStart = pendingItems.length ? (page - 1) * PAGE_SIZE + 1 : 0;
-  const pageEnd = Math.min(page * PAGE_SIZE, pendingItems.length);
+  const orderedItems = useMemo(() => [...pendingItems].sort((a, b) => {
+    const priorityDiff = priorityFor(a).rank - priorityFor(b).rank;
+    if (priorityDiff !== 0) return priorityDiff;
+    const aTime = new Date(a.timestamp).getTime();
+    const bTime = new Date(b.timestamp).getTime();
+    return bTime - aTime;
+  }), [pendingItems]);
+  const totalPages = Math.max(1, Math.ceil(orderedItems.length / PAGE_SIZE));
+  const pageItems = orderedItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pageStart = orderedItems.length ? (page - 1) * PAGE_SIZE + 1 : 0;
+  const pageEnd = Math.min(page * PAGE_SIZE, orderedItems.length);
 
   useEffect(() => {
     if (page > totalPages) setPage(totalPages);
@@ -84,7 +90,7 @@ export function AnalystsPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [pendingItems.length]);
+  }, [orderedItems.length]);
 
   const assignedCount = useMemo(
     () => workload.data?.items?.find((item) => item.analyst_id === CURRENT_ANALYST)?.load ?? 0,
@@ -177,7 +183,7 @@ export function AnalystsPage() {
               <dl className="detail-list">
                 <Detail label="Current analyst" value={`${CURRENT_ANALYST} — SOC Analyst`} />
                 <Detail label="Current assigned load" value={formatNumber(assignedCount)} />
-                <Detail label="Queue size" value={formatNumber(pendingItems.length)} />
+                <Detail label="Queue size" value={formatNumber(orderedItems.length)} />
                 <Detail label="Average analyst load" value={formatDecimal(data.average_analyst_load, 2)} />
                 <Detail label="Load variance" value={formatDecimal(data.load_variance, 2)} />
                 <Detail label="Most loaded analyst" value={data.most_loaded_analyst ? `${data.most_loaded_analyst.name} (${data.most_loaded_analyst.load})` : "—"} />
@@ -190,8 +196,8 @@ export function AnalystsPage() {
 
       <section className="panel">
         <div className="panel__header">
-          <div><p className="eyebrow">ANALYST INBOX</p><h2>Alerts requiring human control</h2><p className="muted" style={{ marginTop: 6 }}>Showing {pageStart}–{pageEnd} of {pendingItems.length} pending alerts · 5 alerts per page.</p></div>
-          <span className="pill">{pendingItems.length} pending</span>
+          <div><p className="eyebrow">ANALYST INBOX</p><h2>Alerts requiring human control</h2><p className="muted" style={{ marginTop: 6 }}>Showing {pageStart}–{pageEnd} of {orderedItems.length} pending alerts · 2 alerts per page · highest risk first.</p></div>
+          <span className="pill">{orderedItems.length} pending</span>
         </div>
         <p className="muted">Every alert shows the complete original source record used for live inference. Review the source attributes first, then apply the human decision.</p>
 
@@ -250,7 +256,7 @@ export function AnalystsPage() {
                 })}
               </div>
 
-              {pendingItems.length > PAGE_SIZE && (
+              {orderedItems.length > PAGE_SIZE && (
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--border, #e3e9f1)" }}>
                   <span className="muted">Page {page} of {totalPages}</span>
                   <nav aria-label="Alert pagination" style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
