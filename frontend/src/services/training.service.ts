@@ -141,6 +141,7 @@ export type AuthoritativeResults = {
     best_epoch?: number | null;
     stopping_reason?: string | null;
     history?: AuthoritativeHistoryPoint[];
+    progress?: Record<string, unknown> | null;
   };
   comparison?: {
     status?: string;
@@ -186,6 +187,7 @@ export type AuthoritativeResults = {
     decision_cycle?: string | null;
     live_inference?: Record<string, unknown> | null;
   } | null;
+  manifest?: Record<string, unknown> | null;
 };
 
 export type AuthoritativeTrainingStatus = {
@@ -193,7 +195,20 @@ export type AuthoritativeTrainingStatus = {
   message?: string;
   started_at?: string | null;
   pid?: number | null;
+  run_id?: string | null;
   results?: AuthoritativeResults | null;
+};
+
+export type TrainingRunSummary = {
+  run_id: string;
+  status?: string | null;
+  algorithm?: string | null;
+  display_name?: string | null;
+  actual_epochs?: number | null;
+  best_epoch?: number | null;
+  metric_count?: number | null;
+  current?: boolean;
+  archived_at?: string | null;
 };
 
 export type TrainingStartPayload = {
@@ -203,8 +218,14 @@ export type TrainingStartPayload = {
   rewards?: RewardConfig;
 };
 
-export const getAuthoritativeFullTrainingStatus = () =>
-  apiRequest<AuthoritativeTrainingStatus>("/api/training-control");
+export const getAuthoritativeFullTrainingStatus = (runId?: string | null) => {
+  const selected = runId ?? new URLSearchParams(window.location.search).get("run_id");
+  const endpoint = selected ? `/api/training-control/runs/${encodeURIComponent(selected)}` : "/api/training-control";
+  return apiRequest<AuthoritativeTrainingStatus>(endpoint);
+};
+
+export const getTrainingRuns = () =>
+  apiRequest<{ runs: TrainingRunSummary[] }>("/api/training-control/runs");
 
 export const startAuthoritativeFullTraining = async (payload: TrainingStartPayload = {}) => {
   try {
