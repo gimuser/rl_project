@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
@@ -90,6 +91,7 @@ def _prepare_training_environment(request: TrainingStartRequest) -> tuple[dict[s
     model_configs: list[dict[str, Any]] = []
     algorithm_params: dict[str, dict[str, Any]] = {}
     requested = {str(cfg.get("name")): cfg for cfg in request.model_configs}
+    global_max_updates = int(env_updates["REAL_RL_MAX_TOTAL_UPDATES"])
 
     for name in request.model_names:
         base = next((dict(item) for item in available if str(item.get("name")) == name), {"name": name, "algorithm": name})
@@ -99,7 +101,8 @@ def _prepare_training_environment(request: TrainingStartRequest) -> tuple[dict[s
         cfg["learning_rate"] = _bounded_float(cfg.get("learning_rate", 0.001), name=f"{name}.learning_rate", low=1e-7, high=1.0)
         cfg["gamma"] = _bounded_float(cfg.get("gamma", 0.95), name=f"{name}.gamma", low=0.0, high=1.0)
         cfg["batch_size"] = _bounded_int(cfg.get("batch_size", 2048), name=f"{name}.batch_size", low=32, high=16_384)
-        cfg["max_total_updates"] = _bounded_int(cfg.get("max_total_updates", env_updates["REAL_RL_MAX_TOTAL_UPDATES"]), name=f"{name}.max_total_updates", low=1, high=100_000_000)
+        # Global control is authoritative. A stale/default candidate value cannot override it.
+        cfg["max_total_updates"] = global_max_updates
         cfg["hidden_dim"] = _bounded_int(cfg.get("hidden_dim", 128), name=f"{name}.hidden_dim", low=16, high=2048)
         model_configs.append(cfg)
         algorithm_params[name] = {
@@ -140,6 +143,58 @@ def _start_with_config(request: TrainingStartRequest):
 @router.get("/models")
 def get_training_models():
     return models()
+
+
+@router.get("/dataset-lineage")
+def get_dataset_lineage():
+    root = Path(__file__).resolve().parents[3]
+    processed = root / "data" / "processed"
+    incident = root / "data" / "rl_incident"
+    report_path = incident / "split_report.json"
+
+    def file_info(path: Path, role: str) -> dict[str, Any]:
+        exists = path.exists()
+        return {
+            "path": str(path.relative_to(root)),
+            "role": role,
+            "exists": exists,
+            "size_bytes": path.stat().st_size if exists else None,
+        }
+
+    report: dict[str, Any] = {}
+    if report_path.exists():
+        try:
+            loaded = json.loads(report_path.read_text(encoding="utf-8"))
+            if isinstance(loaded, dict):
+                report = loaded
+        except Exception:
+            report = {}
+
+    return {
+        "mode": "hard_alert_streaming",
+        "synthetic_data": False,
+        "sources": [
+            file_info(processed / "train_processed.csv", "MODEL TRAIN ROW SOURCE"),
+            file_info(incident / "train_incident.csv", "AUTHORITATIVE TRAIN INCIDENT SPLIT"),
+            file_info(processed / "test_processed.csv", "UNSEEN TEST ROW SOURCE"),
+            file_info(incident / "test_incident.csv", "AUTHORITATIVE TEST INCIDENT SPLIT"),
+            file_info(incident / "train_model_incidents.txt", "MODEL-TRAIN INCIDENT IDS"),
+            file_info(incident / "validation_incidents.txt", "VALIDATION INCIDENT IDS"),
+        ],
+        "split": {
+            "train_rows": report.get("train_rows"),
+            "validation_rows": report.get("validation_rows"),
+            "test_rows": report.get("test_rows"),
+            "train_incidents": report.get("train_incidents", report.get("train_incidents_total")),
+            "model_train_incidents": report.get("model_train_incidents"),
+            "validation_incidents": report.get("validation_incidents"),
+            "test_incidents": report.get("test_incidents"),
+            "train_validation_overlap": report.get("train_validation_overlap", 0),
+            "train_test_overlap": report.get("train_test_overlap", report.get("incident_overlap", 0)),
+            "validation_test_overlap": report.get("validation_test_overlap", 0),
+        },
+        "lineage": "Processed alert rows are the optimizer input; authoritative incident CSVs define the disjoint train/validation/test membership by IncidentId.",
+    }
 
 
 @router.get("/runs")
