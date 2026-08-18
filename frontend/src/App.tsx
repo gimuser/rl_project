@@ -12,8 +12,10 @@ import { HistoryPage } from "./pages/History";
 import { LoginPage } from "./pages/Login";
 import { MetricsPage } from "./pages/Metrics";
 import { SettingsPage } from "./pages/Settings";
+import { TrainingHistory } from "./pages/TrainingHistory";
 import { TrainingLauncherLiveAccess } from "./pages/TrainingLauncherLiveAccess";
 import { TrainingLive } from "./pages/TrainingLive";
+import { TrainingRunViewer } from "./pages/TrainingRunViewer";
 
 export default function App() {
   return <ToastProvider><TrainingStopOverlay /><Routes>
@@ -26,6 +28,8 @@ export default function App() {
       <Route path="/decisions" element={<DecisionsPage />} />
       <Route path="/training" element={<TrainingLauncherLiveAccess />} />
       <Route path="/training/live" element={<TrainingLive />} />
+      <Route path="/training/history" element={<TrainingHistory />} />
+      <Route path="/training/runs/:runId" element={<TrainingRunViewer />} />
       <Route path="/analysts" element={<AnalystsPage />} />
       <Route path="/metrics" element={<MetricsPage />} />
       <Route path="/history" element={<HistoryPage />} />
