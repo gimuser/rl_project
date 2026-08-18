@@ -49,6 +49,65 @@ def _run_id_from_current() -> str | None:
     return str(config["run_id"]) if config.get("run_id") else None
 
 
+def _timestamp_value(value: Any) -> float:
+    if value is None:
+        return 0.0
+    if isinstance(value, (int, float)):
+        return float(value)
+    text = str(value).strip()
+    if not text:
+        return 0.0
+    try:
+        return float(text)
+    except ValueError:
+        pass
+    try:
+        return datetime.fromisoformat(text.replace("Z", "+00:00")).timestamp()
+    except ValueError:
+        return 0.0
+
+
+def _embedded_run_timestamp(metrics: dict[str, Any], run_state: dict[str, Any] | None = None) -> float:
+    run_state = run_state or {}
+    config = metrics.get("config") if isinstance(metrics.get("config"), dict) else {}
+    history = _history_from_metrics(metrics)
+
+    # Prefer the run's own persisted timestamps over filesystem mtimes.
+    for source in (metrics, config, run_state):
+        for key in ("completed_at", "finished_at", "updated_at", "last_updated_at", "created_at", "started_at"):
+            ts = _timestamp_value(source.get(key)) if isinstance(source, dict) else 0.0
+            if ts:
+                return ts
+
+    # Legacy metric points sometimes contain their own timestamp.
+    for point in reversed(history):
+        for key in ("completed_at", "finished_at", "updated_at", "timestamp", "created_at"):
+            ts = _timestamp_value(point.get(key))
+            if ts:
+                return ts
+
+    return 0.0
+
+
+def _path_mtime(path: Path) -> float:
+    try:
+        return path.stat().st_mtime
+    except OSError:
+        return 0.0
+
+
+def _run_sort_timestamp(metrics: dict[str, Any], run_state: dict[str, Any] | None = None, manifest: dict[str, Any] | None = None, fallback: Path | None = None) -> float:
+    ts = _embedded_run_timestamp(metrics, run_state)
+    if ts:
+        return ts
+    manifest = manifest or {}
+    for key in ("sort_timestamp", "last_updated_at", "archived_at"):
+        ts = _timestamp_value(manifest.get(key))
+        if ts:
+            return ts
+    return _path_mtime(fallback) if fallback else 0.0
+
+
 def archive_current_run(reason: str = "superseded_by_new_run") -> str | None:
     run_id = _run_id_from_current()
     if not run_id:
@@ -74,11 +133,16 @@ def archive_current_run(reason: str = "superseded_by_new_run") -> str | None:
             shutil.copy2(source, destination / name)
 
     config = metrics.get("config") if isinstance(metrics.get("config"), dict) else {}
+    run_state = _load(RUN_STATE)
+    sort_timestamp = _run_sort_timestamp(metrics, run_state)
+    archive_time = datetime.now(timezone.utc).isoformat()
     manifest = {
         "run_id": run_id,
-        "archived_at": datetime.now(timezone.utc).isoformat(),
+        "archived_at": archive_time,
+        "last_updated_at": datetime.fromtimestamp(sort_timestamp, timezone.utc).isoformat() if sort_timestamp else archive_time,
+        "sort_timestamp": sort_timestamp,
         "reason": reason,
-        "status": (_load(RUN_STATE).get("status") or metrics.get("status") or "completed"),
+        "status": (run_state.get("status") or metrics.get("status") or "completed"),
         "algorithm": config.get("algorithm") or metrics.get("algorithm"),
         "display_name": config.get("display_name") or metrics.get("display_name"),
         "actual_epochs": metrics.get("actual_epochs") or len(history),
@@ -97,6 +161,8 @@ def _candidate_from_json(path: Path, metrics: dict[str, Any]) -> dict[str, Any] 
         return None
     config = metrics.get("config") if isinstance(metrics.get("config"), dict) else {}
     run_id = str(config.get("run_id") or metrics.get("run_id") or path.stem)
+    run_state = _load(path.parent / "training_run.json")
+    updated_ts = _run_sort_timestamp(metrics, run_state, fallback=path)
     return {
         "run_id": run_id,
         "status": metrics.get("status") or config.get("status") or "completed",
@@ -108,6 +174,8 @@ def _candidate_from_json(path: Path, metrics: dict[str, Any]) -> dict[str, Any] 
         "current": False,
         "legacy": True,
         "source_path": str(path),
+        "sort_timestamp": updated_ts,
+        "last_updated_at": datetime.fromtimestamp(updated_ts, timezone.utc).isoformat() if updated_ts else None,
     }
 
 
@@ -135,6 +203,7 @@ def list_runs() -> list[dict[str, Any]]:
         config = metrics.get("config") if isinstance(metrics.get("config"), dict) else {}
         history = _history_from_metrics(metrics)
         if history:
+            updated_ts = _run_sort_timestamp(metrics, run, fallback=TRAIN_METRICS)
             runs.append({
                 "run_id": current_id,
                 "status": run.get("status") or "current",
@@ -145,6 +214,8 @@ def list_runs() -> list[dict[str, Any]]:
                 "metric_count": len(history),
                 "current": True,
                 "source_path": str(TRAIN_METRICS),
+                "sort_timestamp": updated_ts,
+                "last_updated_at": datetime.fromtimestamp(updated_ts, timezone.utc).isoformat() if updated_ts else None,
             })
 
     if RUNS_DIR.exists():
@@ -152,10 +223,21 @@ def list_runs() -> list[dict[str, Any]]:
             if not directory.is_dir():
                 continue
             manifest = _load(directory / "manifest.json")
+            training = _load(directory / "training_metrics.json")
+            run_state = _load(directory / "training_run.json")
             if not manifest.get("run_id"):
                 manifest["run_id"] = directory.name
             if int(manifest.get("metric_count") or 0) <= 0:
-                continue
+                history = _history_from_metrics(training)
+                if not history:
+                    continue
+                manifest["metric_count"] = len(history)
+                manifest["actual_epochs"] = training.get("actual_epochs") or len(history)
+                manifest["best_epoch"] = training.get("best_epoch")
+            if not manifest.get("sort_timestamp"):
+                manifest["sort_timestamp"] = _run_sort_timestamp(training, run_state, manifest, directory / "training_metrics.json")
+            if not manifest.get("last_updated_at") and manifest.get("sort_timestamp"):
+                manifest["last_updated_at"] = datetime.fromtimestamp(float(manifest["sort_timestamp"]), timezone.utc).isoformat()
             manifest["current"] = False
             manifest["source_path"] = str(directory / "training_metrics.json")
             runs.append(manifest)
@@ -165,7 +247,7 @@ def list_runs() -> list[dict[str, Any]]:
         if candidate.get("source_path") not in seen:
             runs.append(candidate)
 
-    return sorted(runs, key=lambda item: (str(item.get("archived_at") or ""), str(item.get("run_id") or "")), reverse=True)
+    return sorted(runs, key=lambda item: (float(item.get("sort_timestamp") or 0.0), str(item.get("run_id") or "")), reverse=True)
 
 
 def _status_shape(run_id: str, source: str, training: dict[str, Any], evaluation: dict[str, Any], comparison: dict[str, Any], inference: dict[str, Any], run_state: dict[str, Any], progress: dict[str, Any], manifest: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -244,6 +326,6 @@ def load_run(run_id: str) -> dict[str, Any] | None:
         if str(candidate.get("run_id")) != run_id:
             continue
         source = Path(str(candidate["source_path"]))
-        return _status_shape(run_id, "legacy", _load(source), {}, {}, {}, {}, {}, {"legacy": True, "source_path": str(source), "metric_count": candidate.get("metric_count")})
+        return _status_shape(run_id, "legacy", _load(source), {}, {}, {}, _load(source.parent / "training_run.json"), {}, {"legacy": True, "source_path": str(source), "metric_count": candidate.get("metric_count"), "sort_timestamp": candidate.get("sort_timestamp"), "last_updated_at": candidate.get("last_updated_at")})
 
     return None
