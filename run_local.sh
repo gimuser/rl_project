@@ -17,7 +17,6 @@ BACKEND_LOG="/tmp/rl_project_backend.log"
 FRONTEND_LOG="/tmp/rl_project_frontend.log"
 LAUNCHER_LOG="/tmp/rl_project_launcher.log"
 
-log() { printf '\n==> %s\n' "$1"; }
 die() { printf '\nERROR: %s\n' "$1" >&2; exit 1; }
 cleanup() {
   [[ -n "${FRONTEND_PID:-}" ]] && kill "$FRONTEND_PID" >/dev/null 2>&1 || true
@@ -32,28 +31,54 @@ trap cleanup EXIT INT TERM
 [[ -f "$ROOT_DIR/frontend/package.json" ]] || die "frontend/package.json not found."
 [[ -f "$ROOT_DIR/scripts/local_service_launcher.py" ]] || die "scripts/local_service_launcher.py not found."
 
-if ss -ltn 2>/dev/null | grep -q ":${BACKEND_PORT} "; then die "Backend port $BACKEND_PORT is already in use."; fi
-if ss -ltn 2>/dev/null | grep -q ":${FRONTEND_PORT} "; then die "Frontend port $FRONTEND_PORT is already in use."; fi
-if ss -ltn 2>/dev/null | grep -q ":${LAUNCHER_PORT} "; then die "Service launcher port $LAUNCHER_PORT is already in use."; fi
+# Silently reclaim local service ports so repeated ./run_local.sh starts do not
+# fail with "port already in use". Only processes LISTENING on these explicit
+# project ports are terminated; MongoDB and unrelated ports are untouched.
+kill_port_listeners() {
+  local port="$1"
+  local pids=""
+  if command -v fuser >/dev/null 2>&1; then
+    pids="$(fuser -n tcp "$port" 2>/dev/null || true)"
+  else
+    pids="$(ss -ltnp 2>/dev/null | awk -v p=":$port" '$4 ~ p {match($0,/pid=[0-9]+/); if (RSTART) print substr($0,RSTART+4,RLENGTH-4)}' | sort -u || true)"
+  fi
+  if [[ -n "$pids" ]]; then
+    while read -r pid; do
+      [[ "$pid" =~ ^[0-9]+$ ]] || continue
+      kill -TERM "$pid" >/dev/null 2>&1 || true
+    done <<< "$pids"
+    sleep 1
+    if command -v fuser >/dev/null 2>&1; then
+      pids="$(fuser -n tcp "$port" 2>/dev/null || true)"
+    else
+      pids="$(ss -ltnp 2>/dev/null | awk -v p=":$port" '$4 ~ p {match($0,/pid=[0-9]+/); if (RSTART) print substr($0,RSTART+4,RLENGTH-4)}' | sort -u || true)"
+    fi
+    if [[ -n "$pids" ]]; then
+      while read -r pid; do
+        [[ "$pid" =~ ^[0-9]+$ ]] || continue
+        kill -KILL "$pid" >/dev/null 2>&1 || true
+      done <<< "$pids"
+    fi
+  fi
+}
 
-# ---------------------------------------------------------------------------
-# CLEAN STALE TRAINING BEFORE STARTING A FRESH LOCAL STACK
-# ---------------------------------------------------------------------------
+kill_port_listeners "$BACKEND_PORT"
+kill_port_listeners "$FRONTEND_PORT"
+kill_port_listeners "$LAUNCHER_PORT"
+
+# Clean stale sequential training processes silently before starting a fresh
+# local stack. The training-control API otherwise rejects them with HTTP 409.
 STALE_TRAINING_PIDS="$(ps -eo pid=,args= 2>/dev/null | awk '/app\.rl_agent\.sequential_experiment/ && !/awk/ {print $1}')"
 if [[ -n "${STALE_TRAINING_PIDS}" ]]; then
-  log "Stopping stale RL training process(es)"
   while read -r pid; do
-    [[ -n "$pid" ]] || continue
+    [[ "$pid" =~ ^[0-9]+$ ]] || continue
     kill -TERM "$pid" >/dev/null 2>&1 || true
   done <<< "$STALE_TRAINING_PIDS"
-
-  sleep 2
-
+  sleep 1
   STALE_TRAINING_PIDS="$(ps -eo pid=,args= 2>/dev/null | awk '/app\.rl_agent\.sequential_experiment/ && !/awk/ {print $1}')"
   if [[ -n "${STALE_TRAINING_PIDS}" ]]; then
-    log "Force-stopping remaining stale RL training process(es)"
     while read -r pid; do
-      [[ -n "$pid" ]] || continue
+      [[ "$pid" =~ ^[0-9]+$ ]] || continue
       kill -KILL "$pid" >/dev/null 2>&1 || true
     done <<< "$STALE_TRAINING_PIDS"
   fi
@@ -63,11 +88,13 @@ if ! "$PYTHON" -c 'import uvicorn' >/dev/null 2>&1; then die "uvicorn is not ins
 if ! "$NPM" --version >/dev/null 2>&1; then die "npm is not usable."; fi
 
 if [[ ! -x "$ROOT_DIR/frontend/node_modules/.bin/vite" ]]; then
-  log "Installing frontend dependencies"
   (
     cd "$ROOT_DIR/frontend"
-    if [[ -f package-lock.json ]]; then "$NPM" ci; else "$NPM" install; fi
-  ) || die "Frontend dependency installation failed."
+    if [[ -f package-lock.json ]]; then "$NPM" ci >"/tmp/rl_project_npm_install.log" 2>&1; else "$NPM" install >"/tmp/rl_project_npm_install.log" 2>&1; fi
+  ) || {
+    tail -n 40 /tmp/rl_project_npm_install.log >&2 || true
+    die "Frontend dependency installation failed."
+  }
 fi
 
 export MONGO_URI
@@ -91,7 +118,6 @@ export RL_LAUNCHER_PORT="$LAUNCHER_PORT"
 
 rm -f "$BACKEND_LOG" "$FRONTEND_LOG" "$LAUNCHER_LOG"
 
-log "Starting local service launcher"
 "$PYTHON" "$ROOT_DIR/scripts/local_service_launcher.py" \
   >"$LAUNCHER_LOG" 2>&1 &
 LAUNCHER_PID=$!
@@ -99,7 +125,7 @@ LAUNCHER_PID=$!
 LAUNCHER_READY=0
 for _ in {1..20}; do
   if ! kill -0 "$LAUNCHER_PID" >/dev/null 2>&1; then
-    cat "$LAUNCHER_LOG" >&2 || true
+    tail -n 100 "$LAUNCHER_LOG" >&2 || true
     die "Local service launcher exited before becoming ready."
   fi
   if curl -fsS --connect-timeout 1 --max-time 2 \
@@ -111,7 +137,6 @@ for _ in {1..20}; do
 done
 [[ "$LAUNCHER_READY" -eq 1 ]] || die "Local service launcher did not become ready."
 
-log "Starting FastAPI backend"
 "$PYTHON" -m uvicorn backend.main:app \
   --host 127.0.0.1 \
   --port "$BACKEND_PORT" \
@@ -121,7 +146,7 @@ BACKEND_PID=$!
 BACKEND_READY=0
 for _ in {1..120}; do
   if ! kill -0 "$BACKEND_PID" >/dev/null 2>&1; then
-    cat "$BACKEND_LOG" >&2 || true
+    tail -n 100 "$BACKEND_LOG" >&2 || true
     die "Backend exited before becoming ready."
   fi
   if curl -fsS --connect-timeout 1 --max-time 2 \
@@ -139,9 +164,6 @@ done
   die "Backend did not become ready within 60 seconds."
 }
 
-log "Backend READY at http://127.0.0.1:$BACKEND_PORT"
-
-log "Starting Vite frontend"
 (
   cd "$ROOT_DIR/frontend"
   "$NPM" run dev -- --host 0.0.0.0 --port "$FRONTEND_PORT"
@@ -151,7 +173,7 @@ FRONTEND_PID=$!
 FRONTEND_READY=0
 for _ in {1..60}; do
   if ! kill -0 "$FRONTEND_PID" >/dev/null 2>&1; then
-    cat "$FRONTEND_LOG" >&2 || true
+    tail -n 100 "$FRONTEND_LOG" >&2 || true
     die "Frontend exited before becoming ready."
   fi
   if curl -fsS --connect-timeout 1 --max-time 2 \
@@ -167,44 +189,6 @@ done
   die "Frontend did not become ready within 30 seconds."
 }
 
-cat <<EOF
-
-============================================================
-RL_PROJECT READY
-============================================================
-Backend : http://127.0.0.1:$BACKEND_PORT
-Frontend: http://127.0.0.1:$FRONTEND_PORT
-MongoDB : $MONGO_URI
-Service launcher: http://127.0.0.1:$LAUNCHER_PORT
-
-Training page:
-  http://127.0.0.1:$FRONTEND_PORT/training
-
-Alerts page:
-  http://127.0.0.1:$FRONTEND_PORT/alerts
-
-Settings:
-  http://127.0.0.1:$FRONTEND_PORT/settings
-
-Hard-data training defaults:
-  Max epochs       : $REAL_RL_MAX_EPOCHS
-  Minimum epochs   : $REAL_RL_MIN_EPOCHS
-  Patience         : $REAL_RL_PATIENCE
-  Validation every : $REAL_RL_EVAL_EVERY epoch
-  Max update cap   : $REAL_RL_MAX_TOTAL_UPDATES
-  Chunk size       : $REAL_RL_CHUNK_SIZE
-  Batch size       : $REAL_RL_BATCH_SIZE
-  Torch threads    : $RL_TORCH_THREADS
-
-Frontend polling:
-  $VITE_POLL_INTERVAL_MS ms
-
-Backend log : $BACKEND_LOG
-Frontend log: $FRONTEND_LOG
-Launcher log: $LAUNCHER_LOG
-
-Press CTRL+C to stop all local services.
-============================================================
-EOF
+printf '\nBackend : http://127.0.0.1:%s\nFrontend: http://127.0.0.1:%s\n' "$BACKEND_PORT" "$FRONTEND_PORT"
 
 wait
