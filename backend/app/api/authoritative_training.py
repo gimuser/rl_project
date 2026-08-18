@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 from app.services.authoritative_training_control import models, start, status
 from app.services.force_training_stop import stop as force_stop
+from app.services.training_history import archive_current_run, list_runs, load_run
 
 router = APIRouter(prefix="/api/training-control", tags=["Authoritative Training Control"])
 
@@ -123,6 +124,8 @@ def _prepare_training_environment(request: TrainingStartRequest) -> tuple[dict[s
 def _start_with_config(request: TrainingStartRequest):
     env_updates, previous = _prepare_training_environment(request)
     try:
+        # Preserve every completed run before the next run replaces the active files.
+        archive_current_run()
         os.environ.update(env_updates)
         return start(request.model_names)
     finally:
@@ -136,6 +139,19 @@ def _start_with_config(request: TrainingStartRequest):
 @router.get("/models")
 def get_training_models():
     return models()
+
+
+@router.get("/runs")
+def get_training_runs():
+    return {"runs": list_runs()}
+
+
+@router.get("/runs/{run_id}")
+def get_training_run(run_id: str):
+    value = load_run(run_id)
+    if value is None:
+        raise HTTPException(status_code=404, detail=f"Training run not found: {run_id}")
+    return value
 
 
 @router.post("")
