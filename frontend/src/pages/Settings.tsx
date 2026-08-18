@@ -14,6 +14,7 @@ type RuntimeState = {
 };
 
 const statusLabel: Record<ServiceStatus, string> = { online: "ONLINE", offline: "OFFLINE", degraded: "DEGRADED", checking: "CHECKING" };
+const launcherUrl = "http://127.0.0.1:8765";
 
 const initialChecks: Check[] = [
   { name: "FastAPI control plane", role: "Main backend API, training control, alert routing and analyst actions", endpoint: "/api/system/live-status", status: "checking", detail: "Checking…" },
@@ -27,12 +28,27 @@ export function SettingsPage() {
   const [checks, setChecks] = useState<Check[]>(initialChecks);
   const [runtime, setRuntime] = useState<RuntimeState>({});
   const [refreshing, setRefreshing] = useState(false);
+  const [startingServices, setStartingServices] = useState(false);
+  const [launcherOnline, setLauncherOnline] = useState(false);
+  const [launcherMessage, setLauncherMessage] = useState("");
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
   const [polling, setPolling] = useState(Number(import.meta.env.VITE_POLL_INTERVAL_MS || 2000));
   const [autoRefresh, setAutoRefresh] = useState(true);
 
+  const checkLauncher = useCallback(async () => {
+    try {
+      const response = await fetch(`${launcherUrl}/status`, { cache: "no-store" });
+      if (!response.ok) throw new Error("launcher unavailable");
+      const value = await response.json();
+      setLauncherOnline(value.launcher === "online");
+    } catch {
+      setLauncherOnline(false);
+    }
+  }, []);
+
   const refresh = useCallback(async () => {
     setRefreshing(true);
+    await checkLauncher();
     setChecks((current) => current.map((item) => ({ ...item, status: "checking", detail: "Checking…" })));
 
     const runCheck = async <T,>(path: string) => {
@@ -63,14 +79,14 @@ export function SettingsPage() {
         name: "FastAPI control plane",
         role: "Main backend API, training control, alert routing and analyst actions",
         endpoint: "/api/system/live-status",
-        status: !systemResult.ok ? "offline" : (system?.api === "healthy" || system?.api === "online" ? "online" : "degraded"),
+        status: !systemResult.ok ? "offline" : (String(system?.api ?? "").toLowerCase().match(/healthy|online/) ? "online" : "degraded"),
         detail: systemResult.ok ? `${system?.api ?? "reachable"} · ${systemResult.latency} ms` : "API unreachable",
       },
       {
         name: "MongoDB data layer",
         role: "Live alerts, analyst workload, decisions and persisted operational state",
         endpoint: "/api/system/live-status",
-        status: !systemResult.ok ? "offline" : (system?.database === "healthy" || system?.database === "online" ? "online" : "degraded"),
+        status: !systemResult.ok ? "offline" : (String(system?.database ?? "").toLowerCase().match(/healthy|online/) ? "online" : "degraded"),
         detail: systemResult.ok ? `${system?.database ?? "reachable"} · ${systemResult.latency} ms` : "Database status unavailable",
       },
       {
@@ -98,7 +114,26 @@ export function SettingsPage() {
 
     setLastRefresh(new Date());
     setRefreshing(false);
-  }, []);
+  }, [checkLauncher]);
+
+  const startServices = async () => {
+    setStartingServices(true);
+    setLauncherMessage("");
+    try {
+      const response = await fetch(`${launcherUrl}/restart-backend`, { method: "POST" });
+      const value = await response.json().catch(() => ({}));
+      if (!response.ok || !value.ok) {
+        throw new Error(value.message || "Local service launcher failed to start FastAPI.");
+      }
+      setLauncherMessage(value.message || "Backend restart requested. Checking services…");
+      await new Promise((resolve) => window.setTimeout(resolve, 1500));
+      await refresh();
+    } catch (error) {
+      setLauncherMessage(error instanceof Error ? error.message : "Local launcher unavailable. Start the project with ./run_local.sh first.");
+    } finally {
+      setStartingServices(false);
+    }
+  };
 
   useEffect(() => { void refresh(); }, [refresh]);
 
@@ -114,7 +149,14 @@ export function SettingsPage() {
   const workload = runtime.workload;
 
   return <>
-    <PageHeader eyebrow="SYSTEM CONTROL" title="System settings & integrations" description="Monitor the live services behind the SOC control room, see what each service does, and control browser-side monitoring behavior." actions={<button className="settings-refresh" onClick={() => void refresh()} disabled={refreshing}>{refreshing ? "Checking…" : "Refresh status"}</button>} />
+    <PageHeader
+      eyebrow="SYSTEM CONTROL"
+      title="System settings & integrations"
+      description="Monitor the live services behind the SOC control room, see what each service does, and control browser-side monitoring behavior."
+      actions={<div className="button-group"><button className="settings-refresh" onClick={() => void refresh()} disabled={refreshing}>{refreshing ? "Checking…" : "Refresh status"}</button><button className="settings-refresh settings-refresh--primary" onClick={() => void startServices()} disabled={startingServices}>{startingServices ? "Starting services…" : allOnline ? "Restart backend" : "Start services"}</button></div>}
+    />
+
+    {launcherMessage && <section className="panel panel--notice" role="status"><strong>Local service control</strong><p>{launcherMessage}</p></section>}
 
     <section className="settings-kpis">
       <article className="panel settings-kpi"><span>Overall health</span><strong className={allOnline ? "is-good" : "is-warning"}>{allOnline ? "Operational" : "Attention needed"}</strong></article>
@@ -143,6 +185,10 @@ export function SettingsPage() {
       <article className="panel settings-section"><div className="panel__header"><div><p className="eyebrow">ANALYST OPERATIONS</p><h2>Workload status</h2></div></div>
         <dl className="detail-list"><Detail label="Average utilization" value={workload?.average_analyst_load != null ? `${Number(workload.average_analyst_load).toFixed(1)}%` : "—"} /><Detail label="Load variance" value={workload?.load_variance != null ? String(workload.load_variance) : "—"} /><Detail label="Most loaded" value={workload?.most_loaded_analyst?.name ? `${workload.most_loaded_analyst.name} · ${Number(workload.most_loaded_analyst.utilization ?? 0).toFixed(1)}%` : "—"} /><Detail label="Least loaded" value={workload?.least_loaded_analyst?.name ? `${workload.least_loaded_analyst.name} · ${Number(workload.least_loaded_analyst.utilization ?? 0).toFixed(1)}%` : "—"} /></dl>
       </article>
+    </section>
+
+    <section className="panel settings-section"><div className="panel__header"><div><p className="eyebrow">LOCAL SERVICE CONTROL</p><h2>Service launcher</h2></div><span className={`settings-live-indicator ${launcherOnline ? "settings-live-indicator--ok" : ""}`}>{launcherOnline ? "Launcher online · 127.0.0.1:8765" : "Launcher offline"}</span></div>
+      <p className="muted">The local launcher is started by <code>./run_local.sh</code>. When it is online, this page can restart FastAPI even if the backend API itself is currently down.</p>
     </section>
 
     <section className="panel settings-section"><div className="panel__header"><div><p className="eyebrow">FRONTEND RUNTIME</p><h2>Live monitoring controls</h2></div><span className="settings-live-indicator">Browser session only</span></div>
