@@ -124,8 +124,9 @@ def _prepare_training_environment(request: TrainingStartRequest) -> tuple[dict[s
 def _start_with_config(request: TrainingStartRequest):
     env_updates, previous = _prepare_training_environment(request)
     try:
-        # Preserve every completed run before the next run replaces the active files.
-        archive_current_run()
+        current = status()
+        if current.get("status") not in {"running", "starting"}:
+            archive_current_run()
         os.environ.update(env_updates)
         return start(request.model_names)
     finally:
