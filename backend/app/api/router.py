@@ -10,6 +10,7 @@ from app.api.dashboard import router as dashboard_router
 from app.api.agent import router as agent_router
 from app.api.evaluation import router as evaluation_router
 from app.api.metrics import router as metrics_router
+from app.api.additional_metrics import router as additional_metrics_router
 from app.api.api_status import router as api_status_router
 from app.api.live_alerts import router as live_alerts_router
 from app.api.live_cycle import router as live_cycle_router
@@ -35,3 +36,4 @@ router.include_router(db_router)
 router.include_router(agent_router)
 router.include_router(evaluation_router)
 router.include_router(metrics_router)
+router.include_router(additional_metrics_router)
