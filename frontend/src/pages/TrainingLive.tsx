@@ -36,25 +36,44 @@ const fmt = (value: unknown, digits = 4) =>
 const number = (value: unknown) =>
   typeof value === "number" && Number.isFinite(value) ? nf.format(value) : "—";
 
-const pointValue = (point: AuthoritativeHistoryPoint, metric: MetricKey) => {
-  if (metric === "policy_reward") return Number((point as any).policy_reward ?? point.avg_reward ?? point.average_reward ?? 0);
-  if (metric === "total_updates") return Number((point as any).total_updates ?? point.updates ?? 0);
-  return Number((point as any)[metric] ?? 0);
+const pointValue = (point: AuthoritativeHistoryPoint, metric: MetricKey): number | null => {
+  const raw = metric === "policy_reward"
+    ? (point as any).policy_reward ?? point.avg_reward ?? point.average_reward
+    : metric === "total_updates"
+      ? (point as any).total_updates ?? point.updates
+      : (point as any)[metric];
+  const value = Number(raw);
+  return raw == null || !Number.isFinite(value) ? null : value;
 };
 
-function LegacyChart({ values, labels, label, accent, formatter }: { values: number[]; labels: string[]; label: string; accent: string; formatter: (value: number) => string; }) {
-  if (!values.length) return <div className="chart-empty">No completed epoch telemetry yet.</div>;
+function LegacyChart({ values, labels, label, accent, formatter }: { values: Array<number | null>; labels: string[]; label: string; accent: string; formatter: (value: number) => string; }) {
+  const validValues = values.filter((value): value is number => value != null && Number.isFinite(value));
+  if (!validValues.length) return <div className="chart-empty">No completed epoch telemetry yet.</div>;
   const width = 560;
   const height = 200;
   const padding = 18;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
+  const min = Math.min(...validValues);
+  const max = Math.max(...validValues);
   const range = max - min || Math.max(Math.abs(max) * 0.05, 1);
   const coordinates = values.map((value, index) => {
+    if (value == null || !Number.isFinite(value)) return null;
     const x = padding + (index / Math.max(values.length - 1, 1)) * (width - padding * 2);
     const y = height - padding - ((value - min) / range) * (height - padding * 2);
-    return { x, y };
+    return { x, y, value };
   });
+
+  const segments: string[] = [];
+  let current: string[] = [];
+  for (const point of coordinates) {
+    if (!point) {
+      if (current.length > 1) segments.push(current.join(" "));
+      current = [];
+      continue;
+    }
+    current.push(`${point.x},${point.y}`);
+  }
+  if (current.length > 1) segments.push(current.join(" "));
+
   return (
     <div className="legacy-line-chart" style={{ "--chart-accent": accent } as React.CSSProperties} role="img" aria-label={`${label} line chart`}>
       <div className="legacy-line-chart__axis legacy-line-chart__axis--top">{formatter(max)}</div>
@@ -63,8 +82,8 @@ function LegacyChart({ values, labels, label, accent, formatter }: { values: num
         <line x1={padding} x2={width - padding} y1={padding} y2={padding} />
         <line x1={padding} x2={width - padding} y1={height / 2} y2={height / 2} />
         <line x1={padding} x2={width - padding} y1={height - padding} y2={height - padding} />
-        <polyline points={coordinates.map((p) => `${p.x},${p.y}`).join(" ")} />
-        {coordinates.map((p, index) => <circle key={`${labels[index]}-${index}`} cx={p.x} cy={p.y} r="3.5"><title>{`${labels[index]} · ${formatter(values[index])}`}</title></circle>)}
+        {segments.map((points, index) => <polyline key={`${label}-segment-${index}`} points={points} />)}
+        {coordinates.map((point, index) => point ? <circle key={`${labels[index]}-${index}`} cx={point.x} cy={point.y} r="3.5"><title>{`${labels[index]} · ${formatter(point.value)}`}</title></circle> : null)}
       </svg>
       <div className="legacy-line-chart__labels"><span>{labels[0]}</span><span>{labels[labels.length - 1]}</span></div>
     </div>
@@ -75,12 +94,14 @@ function HistoryChart({ title, history, metric, windowSize, accent, percent = fa
   const visible = history.slice(-Math.max(1, Math.min(windowSize, history.length)));
   const values = visible.map((point) => pointValue(point, metric));
   const labels = visible.map((point) => `E${point.epoch}`);
+  const measured = values.filter((value): value is number => value != null).length;
   const formatter = (value: number) => metric === "total_updates" ? nf.format(Math.round(value)) : percent ? `${(value * 100).toFixed(1)}%` : value.toFixed(4);
+  const numeric = values.filter((value): value is number => value != null && Number.isFinite(value));
   return (
     <article className="legacy-chart-panel">
-      <div className="legacy-chart-panel__header"><div><p className="eyebrow">TRAINING CURVE</p><h2>{title}</h2></div><span>{visible.length} epochs</span></div>
+      <div className="legacy-chart-panel__header"><div><p className="eyebrow">TRAINING CURVE</p><h2>{title}</h2></div><span>{visible.length} epochs{measured !== visible.length ? ` · ${measured} measured` : ""}</span></div>
       <LegacyChart values={values} labels={labels} label={title} accent={accent} formatter={formatter} />
-      {visible.length > 0 && <div className="legacy-chart-panel__meta"><span>min {fmt(Math.min(...values), 5)}</span><span>max {fmt(Math.max(...values), 5)}</span></div>}
+      {numeric.length > 0 && <div className="legacy-chart-panel__meta"><span>min {fmt(Math.min(...numeric), 5)}</span><span>max {fmt(Math.max(...numeric), 5)}</span></div>}
     </article>
   );
 }
@@ -155,9 +176,9 @@ export function TrainingLive() {
 
   const bestStats = useMemo(() => {
     if (!history.length) return { epoch: null, validation: null, reward: null, efficiency: null };
-    const byValidation = [...history].filter((p) => Number.isFinite(Number((p as any).validation_score))).sort((a, b) => Number((b as any).validation_score ?? -Infinity) - Number((a as any).validation_score ?? -Infinity))[0];
-    const byReward = [...history].sort((a, b) => pointValue(b, "policy_reward") - pointValue(a, "policy_reward"))[0];
-    const byEfficiency = [...history].sort((a, b) => pointValue(b, "reward_efficiency") - pointValue(a, "reward_efficiency"))[0];
+    const byValidation = [...history].filter((p) => p.validation_score != null && Number.isFinite(Number(p.validation_score))).sort((a, b) => Number(b.validation_score) - Number(a.validation_score))[0];
+    const byReward = [...history].sort((a, b) => (pointValue(b, "policy_reward") ?? -Infinity) - (pointValue(a, "policy_reward") ?? -Infinity))[0];
+    const byEfficiency = [...history].sort((a, b) => (pointValue(b, "reward_efficiency") ?? -Infinity) - (pointValue(a, "reward_efficiency") ?? -Infinity))[0];
     return { epoch: (t?.best_epoch ?? byValidation?.epoch ?? null) as number | null, validation: byValidation ? pointValue(byValidation, "validation_score") : null, reward: byReward ? pointValue(byReward, "policy_reward") : null, efficiency: byEfficiency ? pointValue(byEfficiency, "reward_efficiency") : null };
   }, [history, t?.best_epoch]);
 
