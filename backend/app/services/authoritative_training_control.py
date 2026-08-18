@@ -21,6 +21,7 @@ TEST_METRICS = MODELS_DIR / "real_test_metrics.json"
 COMPARISON = MODELS_DIR / "model_comparison.json"
 INFERENCE = MODELS_DIR / "live_inference.json"
 RUN_STATE = MODELS_DIR / "training_run.json"
+PROGRESS = MODELS_DIR / "training_progress.json"
 SPLIT_REPORT = PROJECT_ROOT / "data" / "rl_incident" / "split_report.json"
 MODEL_PATH = MODELS_DIR / "real_dqn_agent.pt"
 LOG_PATH = MODELS_DIR / "full_real_training.log"
@@ -63,10 +64,7 @@ def _write_run_state(**updates: Any) -> dict[str, Any]:
     current.update(_json_safe(updates))
 
     RUN_STATE.parent.mkdir(parents=True, exist_ok=True)
-    RUN_STATE.write_text(
-        json.dumps(current, indent=2),
-        encoding="utf-8",
-    )
+    RUN_STATE.write_text(json.dumps(current, indent=2), encoding="utf-8")
     return current
 
 
@@ -174,12 +172,14 @@ def start(model_names: list[str] | None = None) -> dict[str, Any]:
         COMPARISON.write_text(json.dumps({"status": "starting", "run_id": _run_id, "selected_models": selected, "candidates": [], "best": None}, indent=2), encoding="utf-8")
         TEST_METRICS.write_text(json.dumps({}, indent=2), encoding="utf-8")
         INFERENCE.write_text(json.dumps({"status": "idle", "run_id": _run_id, "alerts_considered": 0, "alerts_processed": 0, "human_review_routed": 0, "action_distribution": {}}, indent=2), encoding="utf-8")
+        PROGRESS.write_text(json.dumps({"status": "starting", "stage": "starting", "algorithm": None, "display_name": None, "epoch": 0, "epochs": 0, "completed_epochs": 0, "source_rows_processed": 0, "source_rows_total": 0, "progress_percent": 0.0, "chunks_processed": 0, "chunks_total": 0, "filtered_train_rows_processed": 0, "updates": 0, "total_updates": 0, "run_id": _run_id, "updated_at": time.time()}, indent=2), encoding="utf-8")
         _write_run_state(run_id=_run_id, status="starting", selected_models=selected, started_at=started_at, pid=None)
 
         env = os.environ.copy()
         env["PYTHONPATH"] = str(PROJECT_ROOT / "backend") + os.pathsep + env.get("PYTHONPATH", "")
         env["REAL_RL_EXPERIMENTS"] = json.dumps([by_name[n] for n in selected])
         env["REAL_RL_RUN_ID"] = _run_id
+        env["REAL_RL_PROGRESS_PATH"] = str(PROGRESS)
         env.setdefault("RL_TORCH_THREADS", "2")
         env.setdefault("OMP_NUM_THREADS", "2")
         env.setdefault("MKL_NUM_THREADS", "2")
@@ -222,6 +222,7 @@ def stop() -> dict[str, Any]:
             except Exception: pass
             _log_handle = None
         _last_message = "Training stop requested; all managed/orphan sequential training processes were terminated."
+        PROGRESS.write_text(json.dumps({"status": "stopped", "stage": "stopped", "run_id": _run_id, "updated_at": time.time()}, indent=2), encoding="utf-8")
         _write_run_state(status="stopped", stopped_at=datetime.now(timezone.utc).isoformat(), return_code=_last_return_code)
         return {"status": "stopped", "message": _last_message, "terminated_pids": sorted(set(killed))}
 
@@ -233,6 +234,7 @@ def status() -> dict[str, Any]:
             run_state = _load_json(RUN_STATE) or {}
             running = _process is not None and _process.poll() is None
             training = _load_json(TRAIN_METRICS) or {}
+            progress = _load_json(PROGRESS) or {}
             testing = _load_json(TEST_METRICS) or {}
             comparison = _load_json(COMPARISON) or {}
             split = _load_json(SPLIT_REPORT) or {}
@@ -254,13 +256,12 @@ def status() -> dict[str, Any]:
                 state, message = "idle", "No managed training experiment is running."
 
             if running and not same_run:
-                # Never show stale metrics from a previous run while a new run is starting.
                 config = {"run_id": run_state.get("run_id"), "selected_models": _selected_models, "status": "starting"}
                 training = {"metrics": []}
 
             results = {
                 "dataset": {"name": "train_processed.csv", "train_rows": split.get("train_rows"), "validation_rows": split.get("validation_rows"), "test_rows": split.get("test_rows"), "train_incidents": split.get("train_incidents"), "validation_incidents": split.get("validation_incidents"), "test_incidents": split.get("test_incidents"), "incident_overlap": split.get("incident_overlap"), "features": split.get("features"), "feature_count": len(split.get("features", [])) if isinstance(split.get("features"), list) else None, "synthetic_data": False, "unseen_incidents": True},
-                "training": {"run_id": run_state.get("run_id"), "model_name": config.get("model_name"), "algorithm": config.get("algorithm"), "display_name": config.get("display_name"), "candidate_index": config.get("candidate_index"), "candidate_count": config.get("candidate_count", len(_selected_models)), "selected_models": run_state.get("selected_models", _selected_models), "learning_rate": config.get("learning_rate"), "epochs": config.get("max_epochs", config.get("epochs")), "actual_epochs": training.get("actual_epochs", last.get("epoch")), "min_epochs": config.get("min_epochs"), "patience": config.get("patience"), "min_delta": config.get("min_delta"), "stability_window": config.get("stability_window"), "stability_tolerance": config.get("stability_tolerance"), "batch_size": config.get("batch_size"), "updates_per_epoch": training.get("updates_per_epoch") or last.get("updates_per_epoch"), "max_total_updates": training.get("max_total_updates") or config.get("max_total_updates"), "total_updates_used": training.get("total_updates_used", last.get("total_updates")), "policy_reward": last.get("policy_reward"), "oracle_average_reward": last.get("oracle_average_reward"), "reward_efficiency": last.get("reward_efficiency"), "validation": last.get("validation"), "validation_score": last.get("validation_score"), "best_epoch": training.get("best_epoch", last.get("best_epoch")), "stopping_reason": training.get("stopping_reason") or last.get("stopping_reason"), "history": history},
+                "training": {"run_id": run_state.get("run_id"), "model_name": config.get("model_name"), "algorithm": config.get("algorithm"), "display_name": config.get("display_name"), "candidate_index": config.get("candidate_index"), "candidate_count": config.get("candidate_count", len(_selected_models)), "selected_models": run_state.get("selected_models", _selected_models), "learning_rate": config.get("learning_rate"), "epochs": config.get("max_epochs", config.get("epochs")), "actual_epochs": training.get("actual_epochs", last.get("epoch")), "min_epochs": config.get("min_epochs"), "patience": config.get("patience"), "min_delta": config.get("min_delta"), "stability_window": config.get("stability_window"), "stability_tolerance": config.get("stability_tolerance"), "batch_size": config.get("batch_size"), "updates_per_epoch": training.get("updates_per_epoch") or last.get("updates_per_epoch"), "max_total_updates": training.get("max_total_updates") or config.get("max_total_updates"), "total_updates_used": training.get("total_updates_used", last.get("total_updates")), "policy_reward": last.get("policy_reward"), "oracle_average_reward": last.get("oracle_average_reward"), "reward_efficiency": last.get("reward_efficiency"), "validation": last.get("validation"), "validation_score": last.get("validation_score"), "best_epoch": training.get("best_epoch", last.get("best_epoch")), "stopping_reason": training.get("stopping_reason") or last.get("stopping_reason"), "progress": progress, "history": history},
                 "comparison": comparison if comparison.get("run_id") in (None, run_state.get("run_id")) else {},
                 "evaluation": {"samples": testing.get("test_rows"), "throughput_rows_per_second": testing.get("throughput_rows_per_second"), "average_reward": testing.get("average_reward"), "oracle_average_reward": testing.get("oracle_average_reward"), "policy_optimality": testing.get("policy_optimality"), "reward_efficiency": testing.get("reward_efficiency"), "reward_regret": testing.get("reward_regret"), "action_distribution": testing.get("action_distribution"), "per_class": testing.get("per_class")},
                 "model": {"path": str(MODEL_PATH), "exists": MODEL_PATH.exists(), "size_bytes": MODEL_PATH.stat().st_size if MODEL_PATH.exists() else None, "modified_at": datetime.fromtimestamp(MODEL_PATH.stat().st_mtime, tz=timezone.utc).isoformat() if MODEL_PATH.exists() else None},
