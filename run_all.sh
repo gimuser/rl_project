@@ -8,7 +8,7 @@ BACKEND_PORT="${BACKEND_PORT:-8000}"
 FRONTEND_PORT="${FRONTEND_PORT:-5173}"
 LAUNCHER_PORT="${RL_LAUNCHER_PORT:-8765}"
 MONGO_URI="${MONGO_URI:-mongodb://127.0.0.1:27017}"
-PYTHON="${PYTHON:-$(command -v python3 || true)}"
+PYTHON="${PYTHON:-$(command -v python3.13 || command -v python3 || true)}"
 NPM="${NPM:-$(command -v npm || true)}"
 BACKEND_PID=""
 FRONTEND_PID=""
@@ -26,7 +26,7 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-[[ -n "$PYTHON" ]] || die "python3 not found."
+[[ -n "$PYTHON" ]] || die "python3.13/python3 not found."
 [[ -n "$NPM" ]] || die "npm not found."
 [[ -f "$ROOT_DIR/backend/main.py" ]] || die "backend/main.py not found."
 [[ -f "$ROOT_DIR/frontend/package.json" ]] || die "frontend/package.json not found."
