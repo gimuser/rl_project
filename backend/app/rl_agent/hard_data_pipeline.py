@@ -35,6 +35,7 @@ def _read_ids(path: Path, chunksize: int = 100_000) -> set[str]:
 
 
 def _row_count(path: Path) -> int:
+    """Fast OS-level row count; never iterate over CSV rows in Python."""
     result = subprocess.run(
         ["wc", "-l", str(path)],
         capture_output=True,
