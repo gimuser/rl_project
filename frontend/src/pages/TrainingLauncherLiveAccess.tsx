@@ -44,29 +44,30 @@ function LiveAccessCard() {
     };
   }, []);
 
-  const running = status?.status === "running" || status?.status === "starting";
-  if (!running || !slot) return null;
+  if (!slot) return null;
 
+  const running = status?.status === "running" || status?.status === "starting";
   const training = (status?.results?.training ?? {}) as Record<string, any>;
   const selectedModels = Array.isArray(training.selected_models) ? training.selected_models : [];
-  const algorithm = training.display_name ?? training.algorithm ?? (selectedModels.length === 1 ? selectedModels[0] : "Selected models");
+  const algorithm = training.display_name ?? training.algorithm ?? (selectedModels.length === 1 ? selectedModels[0] : "No active model");
   const epoch = training.actual_epochs ?? training.final_epoch;
   const maxEpochs = training.epochs ?? training.max_epochs;
   const bestEpoch = training.best_epoch;
   const updates = training.total_updates_used ?? training.total_updates;
 
   return createPortal(
-    <section className="training-live-access" aria-live="polite">
+    <section className={`training-live-access ${running ? "training-live-access--running" : "training-live-access--idle"}`} aria-live="polite">
       <div className="training-live-access__pulse" />
       <div className="training-live-access__main">
-        <div className="training-live-access__eyebrow">LIVE TRAINING</div>
-        <strong>{algorithm}</strong>
-        <span>Training is currently running.</span>
+        <div className="training-live-access__eyebrow">LIVE MONITOR</div>
+        <strong>{running ? algorithm : "Live training monitor"}</strong>
+        <span>{running ? "Training is currently running." : "No active training run. Open the live monitor to inspect the latest run."}</span>
       </div>
       <div className="training-live-access__stats">
-        <div><span>Epoch</span><strong>{epoch ?? "—"}{maxEpochs ? ` / ${Number(maxEpochs).toLocaleString()}` : ""}</strong></div>
-        <div><span>Best</span><strong>{bestEpoch ?? "—"}</strong></div>
-        <div><span>Updates</span><strong>{typeof updates === "number" ? updates.toLocaleString() : "—"}</strong></div>
+        <div><span>Status</span><strong>{running ? "RUNNING" : (status?.status ?? "IDLE").toUpperCase()}</strong></div>
+        <div><span>Epoch</span><strong>{running && epoch !== undefined && epoch !== null ? `${epoch}${maxEpochs ? ` / ${Number(maxEpochs).toLocaleString()}` : ""}` : "—"}</strong></div>
+        <div><span>Best</span><strong>{running && bestEpoch !== undefined && bestEpoch !== null ? bestEpoch : "—"}</strong></div>
+        <div><span>Updates</span><strong>{running && typeof updates === "number" ? updates.toLocaleString() : "—"}</strong></div>
       </div>
       <a className="training-live-access__link" href="/training/live">Open live monitor →</a>
     </section>,
