@@ -119,11 +119,10 @@ def seed_live_alerts(force: bool = False) -> dict[str, Any]:
             raise ValueError(f"Live source contains duplicate alert ID: {alert_id}")
         seen_ids.add(alert_id)
 
+        # Preserve the original source record exactly as loaded from
+        # data_alert/live_source.csv. Do not remove, rename, encode, or
+        # normalize source fields for the analyst-facing record.
         source_payload = dict(item)
-        source_payload.pop("alert_id", None)
-        source_payload.pop("AlertId", None)
-        source_payload.pop("ALERT_ID", None)
-        source_payload.pop("AlertID", None)
 
         incident_id = _field(item, "incident_id", "IncidentId", "INCIDENT_ID")
         timestamp = _field(item, "timestamp", "Timestamp")
