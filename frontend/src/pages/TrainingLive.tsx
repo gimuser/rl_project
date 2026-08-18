@@ -176,7 +176,7 @@ export function TrainingLive() {
     <div className="live-page">
       <header className="live-hero">
         <div><div className="live-kicker">RL CONTROL ROOM · HARD-DATA TRAINING</div><h1>{activeRun ? (t?.display_name ?? t?.model_name ?? "Training monitor") : "Training monitor"}</h1><p>Alert-level streaming training, incident-disjoint validation, unseen TEST evaluation, then the complete 80-alert live holdout.</p></div>
-        <div className="live-actions"><button className="live-btn" onClick={() => navigate("/training")}>Choose models</button><button className="live-btn" onClick={() => void refresh()}>Refresh</button>{activeRun && <button className="live-btn live-btn--danger" disabled={stopping} onClick={() => void stop()}>{stopping ? "Stopping…" : "Stop training"}</button>}</div>
+        <div className="live-actions"><button className="live-btn" onClick={() => navigate("/training")}>Choose models</button><button className="live-btn" onClick={() => void refresh()}>Refresh</button><button className="live-btn" onClick={() => navigate("/training/history")}>Training history</button>{activeRun && <button className="live-btn live-btn--danger" disabled={stopping} onClick={() => void stop()}>{stopping ? "Stopping…" : "Stop training"}</button>}</div>
       </header>
       {error && <div className="live-error">{error}</div>}
 
