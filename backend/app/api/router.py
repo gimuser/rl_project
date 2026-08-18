@@ -15,6 +15,7 @@ from app.api.live_alerts import router as live_alerts_router
 from app.api.live_cycle import router as live_cycle_router
 from app.api.authoritative_training import router as authoritative_training_router
 from app.api.authoritative_metrics import router as authoritative_metrics_router
+from app.api.training_history import router as training_history_router
 
 router = APIRouter()
 
@@ -28,6 +29,7 @@ router.include_router(live_alerts_router)
 router.include_router(live_cycle_router)
 router.include_router(authoritative_training_router)
 router.include_router(authoritative_metrics_router)
+router.include_router(training_history_router)
 router.include_router(pipeline_router)
 router.include_router(db_router)
 router.include_router(agent_router)
