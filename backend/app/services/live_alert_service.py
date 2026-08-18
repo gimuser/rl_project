@@ -79,19 +79,41 @@ def ensure_indexes() -> None:
     analysts_collection.create_index("analyst_id", unique=True)
 
 
+def _sync_existing_source_records(source: list[dict[str, Any]]) -> int:
+    """Repair analyst-facing source records without touching inference metadata."""
+    updated = 0
+    for item in source:
+        alert_id = _alert_id(item)
+        if not alert_id:
+            continue
+        result = alerts_collection.update_one(
+            {"alert_id": alert_id},
+            {"$set": {"source": dict(item)}},
+        )
+        updated += int(result.modified_count)
+    return updated
+
+
 def seed_live_alerts(force: bool = False) -> dict[str, Any]:
     ensure_indexes()
     source_path, processed_path, mapping_path = _seed_paths()
     if not source_path.exists() or not processed_path.exists() or not mapping_path.exists():
         return {"seeded": False, "reason": "data_alert files are missing"}
+
+    source = _records(source_path)
+
+    # Existing MongoDB documents from an earlier version may have had AlertId
+    # removed from source. Repair only the analyst-facing source object.
+    repaired_existing = _sync_existing_source_records(source)
+
     if alerts_collection.count_documents({}) > 0 and not force:
-        return {"seeded": False, "reason": "live alerts already exist"}
+        return {"seeded": False, "repaired_existing_source": repaired_existing, "reason": "live alerts already exist"}
+
     if force:
         alerts_collection.delete_many({})
         activity_collection.delete_many({})
         review_collection.delete_many({})
 
-    source = _records(source_path)
     processed = _records(processed_path)
     mapping = _records(mapping_path)
 
@@ -119,9 +141,7 @@ def seed_live_alerts(force: bool = False) -> dict[str, Any]:
             raise ValueError(f"Live source contains duplicate alert ID: {alert_id}")
         seen_ids.add(alert_id)
 
-        # Preserve the original source record exactly as loaded from
-        # data_alert/live_source.csv. Do not remove, rename, encode, or
-        # normalize source fields for the analyst-facing record.
+        # Keep this record exactly as supplied by live_source.csv.
         source_payload = dict(item)
 
         incident_id = _field(item, "incident_id", "IncidentId", "INCIDENT_ID")
@@ -184,7 +204,7 @@ def seed_live_alerts(force: bool = False) -> dict[str, Any]:
         })
     if activity_docs:
         activity_collection.insert_many(activity_docs)
-    return {"seeded": True, "alerts": len(docs), "timestamp": now.isoformat()}
+    return {"seeded": True, "alerts": len(docs), "timestamp": now.isoformat(), "repaired_existing_source": repaired_existing}
 
 
 def list_alerts(limit: int = 100, skip: int = 0, search: str | None = None, severity: str | None = None) -> dict[str, Any]:
