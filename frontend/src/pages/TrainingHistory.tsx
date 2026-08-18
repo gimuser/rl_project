@@ -11,7 +11,14 @@ export function TrainingHistory() {
 
   useEffect(() => {
     getTrainingRuns()
-      .then((response) => setRuns(response.runs ?? []))
+      .then((response) => {
+        const ordered = [...(response.runs ?? [])].sort((a, b) => {
+          const ta = Date.parse(String((a as TrainingRunSummary & { last_updated_at?: string }).last_updated_at ?? "")) || 0;
+          const tb = Date.parse(String((b as TrainingRunSummary & { last_updated_at?: string }).last_updated_at ?? "")) || 0;
+          return tb - ta;
+        });
+        setRuns(ordered);
+      })
       .catch((err) => setError(err instanceof Error ? err.message : String(err)));
   }, []);
 
@@ -42,7 +49,6 @@ export function TrainingHistory() {
               {run.best_epoch ? ` · best epoch ${nf.format(run.best_epoch)}` : ""}
               {run.metric_count ? ` · ${nf.format(run.metric_count)} persisted metric points` : ""}
             </small>
-            <small>Run ID: {run.run_id}</small>
             <div className="live-actions">
               <Link className="live-btn" to={`/training/runs/${encodeURIComponent(run.run_id)}`}>Load run</Link>
             </div>
