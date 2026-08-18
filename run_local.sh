@@ -30,6 +30,34 @@ trap cleanup EXIT INT TERM
 if ss -ltn 2>/dev/null | grep -q ":${BACKEND_PORT} "; then die "Backend port $BACKEND_PORT is already in use."; fi
 if ss -ltn 2>/dev/null | grep -q ":${FRONTEND_PORT} "; then die "Frontend port $FRONTEND_PORT is already in use."; fi
 
+# ---------------------------------------------------------------------------
+# CLEAN STALE TRAINING BEFORE STARTING A FRESH LOCAL STACK
+# ---------------------------------------------------------------------------
+# A backend restart can leave app.rl_agent.sequential_experiment detached from
+# the new FastAPI process. The training-control API correctly rejects such an
+# orphan with HTTP 409, so remove it here before starting a fresh stack.
+# This only runs after the service ports have been confirmed free.
+# ---------------------------------------------------------------------------
+STALE_TRAINING_PIDS="$(ps -eo pid=,args= 2>/dev/null | awk '/app\.rl_agent\.sequential_experiment/ && !/awk/ {print $1}')"
+if [[ -n "${STALE_TRAINING_PIDS}" ]]; then
+  log "Stopping stale RL training process(es)"
+  while read -r pid; do
+    [[ -n "$pid" ]] || continue
+    kill -TERM "$pid" >/dev/null 2>&1 || true
+  done <<< "$STALE_TRAINING_PIDS"
+
+  sleep 2
+
+  STALE_TRAINING_PIDS="$(ps -eo pid=,args= 2>/dev/null | awk '/app\.rl_agent\.sequential_experiment/ && !/awk/ {print $1}')"
+  if [[ -n "${STALE_TRAINING_PIDS}" ]]; then
+    log "Force-stopping remaining stale RL training process(es)"
+    while read -r pid; do
+      [[ -n "$pid" ]] || continue
+      kill -KILL "$pid" >/dev/null 2>&1 || true
+    done <<< "$STALE_TRAINING_PIDS"
+  fi
+fi
+
 if ! "$PYTHON" -c 'import uvicorn' >/dev/null 2>&1; then die "uvicorn is not installed in the selected Python environment."; fi
 if ! "$NPM" --version >/dev/null 2>&1; then die "npm is not usable."; fi
 
