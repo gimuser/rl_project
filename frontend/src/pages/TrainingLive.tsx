@@ -103,6 +103,23 @@ export function TrainingLive() {
   const selected = t?.selected_models ?? [];
   const liveDistribution = (live?.action_distribution ?? {}) as Record<string, number>;
   const liveTotal = Object.values(liveDistribution).reduce((sum, value) => sum + Number(value || 0), 0);
+  const progress = (t as any)?.progress as {
+    status?: string;
+    stage?: string;
+    algorithm?: string | null;
+    display_name?: string | null;
+    epoch?: number;
+    epochs?: number;
+    completed_epochs?: number;
+    source_rows_processed?: number;
+    source_rows_total?: number;
+    progress_percent?: number;
+    chunks_processed?: number;
+    chunks_total?: number;
+    filtered_train_rows_processed?: number;
+    updates?: number;
+    total_updates?: number;
+  } | null;
   const maxWindow = Math.max(10, history.length || 10);
   const effectiveWindow = Math.min(windowSize, maxWindow);
 
@@ -114,11 +131,27 @@ export function TrainingLive() {
 
   const liveComplete = live?.alerts_considered === LIVE_EXPECTED && live?.alerts_processed === LIVE_EXPECTED;
   const statusClass = state?.status ?? "idle";
+  const progressVisible = state?.status === "running" && progress && progress.stage === "epoch_in_progress";
+  const progressPercent = Math.max(0, Math.min(100, Number(progress?.progress_percent ?? 0)));
 
   return <div className="live-page">
     <header className="live-hero"><div><div className="live-kicker">RL CONTROL ROOM · HARD-DATA TRAINING</div><h1>{t?.display_name ?? t?.model_name ?? "Training monitor"}</h1><p>Alert-level streaming training, incident-disjoint validation, unseen TEST evaluation, then the complete 80-alert live holdout.</p></div><div className="live-actions"><button className="live-btn" onClick={() => navigate("/training")}>Choose models</button><button className="live-btn" onClick={() => void refresh()}>Refresh</button>{state?.status === "running" && <button className="live-btn live-btn--danger" disabled={stopping} onClick={() => void stop()}>{stopping ? "Stopping…" : "Stop training"}</button>}</div></header>
     {error && <div className="live-error">{error}</div>}
-    <section className="live-kpis"><div><span>Status</span><strong className={`status ${statusClass}`}>{state?.status ?? "idle"}</strong></div><div><span>Algorithm</span><strong>{t?.display_name ?? t?.algorithm ?? "—"}</strong></div><div><span>Epoch</span><strong>{nf.format(t?.actual_epochs ?? latest?.epoch ?? 0)} / {nf.format(t?.epochs ?? 0)}</strong></div><div><span>Updates</span><strong>{nf.format(t?.total_updates_used ?? 0)}</strong></div><div><span>Best epoch</span><strong>{nf.format(t?.best_epoch ?? 0)}</strong></div><div><span>Stop reason</span><strong>{t?.stopping_reason ?? "learning"}</strong></div></section>
+    <section className="live-kpis"><div><span>Status</span><strong className={`status ${statusClass}`}>{state?.status ?? "idle"}</strong></div><div><span>Algorithm</span><strong>{t?.display_name ?? t?.algorithm ?? progress?.display_name ?? "—"}</strong></div><div><span>Epoch</span><strong>{progressVisible ? `${nf.format(progress?.epoch ?? 1)} in progress` : `${nf.format(t?.actual_epochs ?? latest?.epoch ?? 0)} / ${nf.format(t?.epochs ?? 0)}`}</strong></div><div><span>Updates</span><strong>{nf.format(t?.total_updates_used ?? progress?.total_updates ?? 0)}</strong></div><div><span>Best epoch</span><strong>{nf.format(t?.best_epoch ?? 0)}</strong></div><div><span>Stop reason</span><strong>{t?.stopping_reason ?? "learning"}</strong></div></section>
+
+    {progressVisible && <section style={{ margin: "0 0 18px", padding: "18px 20px", border: "1px solid var(--lux-line, #d8e0ea)", borderRadius: 16, background: "var(--lux-card, rgba(255,255,255,.78))", boxShadow: "0 10px 28px rgba(15,23,42,.06)" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 16, alignItems: "flex-end", flexWrap: "wrap" }}>
+        <div><p className="eyebrow">REAL-TIME TRAINING PROGRESS</p><h2 style={{ margin: 0 }}>Epoch {nf.format(progress?.epoch ?? 1)} in progress</h2><p style={{ margin: "6px 0 0", opacity: .72 }}>The epoch is still computing. Persisted epoch telemetry appears only after the full streaming pass completes.</p></div>
+        <strong style={{ fontSize: "1.4rem" }}>{progressPercent.toFixed(1)}%</strong>
+      </div>
+      <div style={{ marginTop: 14, height: 12, borderRadius: 999, overflow: "hidden", background: "rgba(110,137,173,.16)" }}><div style={{ width: `${progressPercent}%`, height: "100%", borderRadius: 999, background: "linear-gradient(90deg,#2563eb,#60a5fa)", transition: "width .25s ease" }} /></div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 12, marginTop: 14 }}>
+        <div><span style={{ display: "block", fontSize: ".68rem", opacity: .62 }}>Rows processed</span><strong>{nf.format(progress?.source_rows_processed ?? 0)} / {nf.format(progress?.source_rows_total ?? 0)}</strong></div>
+        <div><span style={{ display: "block", fontSize: ".68rem", opacity: .62 }}>Chunks</span><strong>{nf.format(progress?.chunks_processed ?? 0)} / {nf.format(progress?.chunks_total ?? 0)}</strong></div>
+        <div><span style={{ display: "block", fontSize: ".68rem", opacity: .62 }}>Optimizer updates</span><strong>{nf.format(progress?.total_updates ?? 0)}</strong></div>
+      </div>
+    </section>}
+
     <section className="live-grid live-grid--four"><div className="metric"><span>Policy reward</span><strong>{fmt(t?.policy_reward ?? latest?.policy_reward, 6)}</strong></div><div className="metric"><span>Validation score</span><strong>{fmt(t?.validation_score ?? latest?.validation_score, 4)}</strong></div><div className="metric"><span>Reward efficiency</span><strong>{fmt(t?.reward_efficiency ?? latest?.reward_efficiency, 4)}</strong></div><div className="metric"><span>Live cycle</span><strong>{liveTotal ? `${liveTotal} actions` : "waiting"}</strong></div></section>
     <section className="chart-toolbar"><div><strong>Telemetry window</strong><span>{history.length} persisted epochs</span></div><label>Window <input type="range" min="10" max={maxWindow} value={effectiveWindow} onChange={(event) => { setFollow(false); setWindowSize(Number(event.target.value)); }} /><b>{effectiveWindow}</b></label><button className={follow ? "toggle active" : "toggle"} onClick={() => setFollow((value) => !value)}>{follow ? "Following latest" : "Manual window"}</button></section>
     <section className="charts-grid"><HistoryChart title="Training loss" history={history} field="loss" windowSize={effectiveWindow} accent="#2563eb" /><HistoryChart title="Policy reward" history={history} field="policy_reward" windowSize={effectiveWindow} accent="#12805c" /><HistoryChart title="Validation score" history={history} field="validation_score" windowSize={effectiveWindow} percent accent="#7c3aed" /><HistoryChart title="Reward efficiency" history={history} field="reward_efficiency" windowSize={effectiveWindow} percent accent="#a7680a" /><HistoryChart title="Cumulative optimizer updates" history={history} field="total_updates" windowSize={effectiveWindow} accent="#c43d4b" /><ActionsChart history={history} windowSize={effectiveWindow} /></section>
