@@ -9,6 +9,27 @@ import type { LiveAlert } from "../types/domain";
 
 const CURRENT_ANALYST = "SA";
 
+const SOURCE_FIELDS = [
+  ["IncidentId", "Incident ID"],
+  ["AlertId", "Alert ID"],
+  ["Timestamp", "Timestamp"],
+  ["Category", "Category"],
+  ["MitreTechniques", "MITRE Techniques"],
+  ["IncidentGrade", "Incident Grade"],
+  ["ActionGrouped", "Action Grouped"],
+  ["ActionGranular", "Action Granular"],
+  ["EntityType", "Entity Type"],
+  ["EvidenceRole", "Evidence Role"],
+  ["ThreatFamily", "Threat Family"],
+  ["OSFamily", "OS Family"],
+  ["SuspicionLevel", "Suspicion Level"],
+] as const;
+
+function sourceValue(alert: LiveAlert, key: string) {
+  const value = alert.source?.[key];
+  return value === null || value === undefined || value === "" ? "—" : String(value);
+}
+
 export function AnalystsPage() {
   const workload = useApi(liveAlertsService.getWorkload, { poll: true });
   const pending = useApi(() => liveAlertsService.getPendingForAnalyst(CURRENT_ANALYST, 100), { poll: true });
@@ -118,52 +139,62 @@ export function AnalystsPage() {
           <div><p className="eyebrow">ANALYST INBOX</p><h2>Alerts requiring human control</h2></div>
           <span className="pill">{pendingItems.length} pending</span>
         </div>
-        <p className="muted">Incoming alerts assigned to {CURRENT_ANALYST} or still waiting for analyst control. Actions below are persisted as human decisions and MongoDB activity history.</p>
+        <p className="muted">Every alert shows the complete source record used for live inference. Review the original alert attributes first, then assign or apply the human decision.</p>
 
         <QueryState state={pending} empty={(data) => data.items.length === 0}>
           {(data) => (
-            <div className="table-scroll">
-              <table className="alerts-table">
-                <thead>
-                  <tr><th>Alert</th><th>Source characteristics</th><th>Agent action</th><th>Status</th><th>Analyst controls</th></tr>
-                </thead>
-                <tbody>
-                  {data.items.map((alert) => {
-                    const disabled = busyAlert === alert.alert_id;
-                    return (
-                      <tr key={alert.alert_id}>
-                        <td>
-                          <strong>{alert.alert_id}</strong>
-                          <div>{String(alert.source.Category ?? "Unknown")}</div>
-                          <div className="muted">Incident {alert.incident_id}</div>
-                        </td>
-                        <td>
-                          <div><strong>MITRE:</strong> {String(alert.source.MitreTechniques ?? "Unknown")}</div>
-                          <div><strong>Verdict:</strong> {String(alert.source.LastVerdict ?? "Unknown")}</div>
-                          <div><strong>Entity:</strong> {String(alert.source.EntityType ?? "Unknown")}</div>
-                        </td>
-                        <td>
-                          <StatusBadge value={alert.agent.action} />
-                          <div className="muted">{alert.agent.confidence == null ? "Awaiting live inference" : `${(alert.agent.confidence * 100).toFixed(1)}% confidence`}</div>
-                        </td>
-                        <td><StatusBadge value={alert.status} /></td>
-                        <td>
-                          <div className="action-stack">
-                            <button className="button button--compact" disabled={disabled || Boolean(alert.assigned_analyst)} onClick={() => assignToMe(alert)}>{alert.assigned_analyst ? `Assigned: ${alert.assigned_analyst}` : "Assign to me"}</button>
-                            <div className="button-row">
-                              <button className="button button--success button--compact" disabled={disabled} onClick={() => applyAction(alert, "approve")}>Allow</button>
-                              <button className="button button--danger button--compact" disabled={disabled} onClick={() => applyAction(alert, "block")}>Block</button>
-                              <button className="button button--compact" disabled={disabled} onClick={() => applyAction(alert, "escalate")}>Escalate</button>
-                              <button className="button button--compact" disabled={disabled} onClick={() => applyAction(alert, "close")}>Close</button>
-                              <button className="button button--danger button--compact" disabled={disabled} onClick={() => applyAction(alert, "delete")}>Delete</button>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <div style={{ display: "grid", gap: 16 }}>
+              {data.items.map((alert) => {
+                const disabled = busyAlert === alert.alert_id;
+                return (
+                  <article key={alert.alert_id} className="panel" style={{ margin: 0, background: "#fbfdff" }}>
+                    <div className="panel__header">
+                      <div>
+                        <p className="eyebrow">LIVE ALERT · SOURCE RECORD</p>
+                        <h2>{alert.alert_id} · Incident {alert.incident_id}</h2>
+                        <p className="muted">Received {formatDateTime(alert.timestamp)} · Status {alert.status}</p>
+                      </div>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                        <StatusBadge value={alert.agent.action} />
+                        <StatusBadge value={alert.status} />
+                      </div>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 10 }}>
+                      {SOURCE_FIELDS.map(([key, label]) => (
+                        <div key={key} style={{ padding: "10px 12px", border: "1px solid #dfe6ef", borderRadius: 10, background: "#fff" }}>
+                          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", color: "#8191a4", marginBottom: 5 }}>{label}</div>
+                          <div style={{ color: "#17233b", fontWeight: 700, fontSize: 13, wordBreak: "break-word" }}>{sourceValue(alert, key)}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10, marginTop: 12 }}>
+                      <div style={{ padding: "10px 12px", border: "1px solid #dfe6ef", borderRadius: 10, background: "#f8faff" }}>
+                        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", color: "#8191a4", marginBottom: 5 }}>Agent confidence</div>
+                        <div style={{ color: "#17233b", fontWeight: 700 }}>{alert.agent.confidence == null ? "Awaiting live inference" : `${(alert.agent.confidence * 100).toFixed(1)}%`}</div>
+                      </div>
+                      <div style={{ padding: "10px 12px", border: "1px solid #dfe6ef", borderRadius: 10, background: "#f8faff" }}>
+                        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", color: "#8191a4", marginBottom: 5 }}>Assigned analyst</div>
+                        <div style={{ color: "#17233b", fontWeight: 700 }}>{alert.assigned_analyst ?? "Not assigned"}</div>
+                      </div>
+                      <div style={{ padding: "10px 12px", border: "1px solid #dfe6ef", borderRadius: 10, background: "#f8faff" }}>
+                        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", color: "#8191a4", marginBottom: 5 }}>Model version</div>
+                        <div style={{ color: "#17233b", fontWeight: 700 }}>{alert.agent.model_version ?? "—"}</div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 14, paddingTop: 14, borderTop: "1px solid #e3e9f1" }}>
+                      <button className="button button--compact" disabled={disabled || Boolean(alert.assigned_analyst)} onClick={() => assignToMe(alert)}>{alert.assigned_analyst ? `Assigned: ${alert.assigned_analyst}` : "Assign to me"}</button>
+                      <button className="button button--success button--compact" disabled={disabled} onClick={() => applyAction(alert, "approve")}>Allow</button>
+                      <button className="button button--danger button--compact" disabled={disabled} onClick={() => applyAction(alert, "block")}>Block</button>
+                      <button className="button button--compact" disabled={disabled} onClick={() => applyAction(alert, "escalate")}>Escalate</button>
+                      <button className="button button--compact" disabled={disabled} onClick={() => applyAction(alert, "close")}>Close</button>
+                      <button className="button button--danger button--compact" disabled={disabled} onClick={() => applyAction(alert, "delete")}>Delete</button>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
         </QueryState>
