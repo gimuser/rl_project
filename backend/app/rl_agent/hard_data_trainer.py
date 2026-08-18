@@ -44,6 +44,13 @@ def _model_dtypes() -> dict[str, str]:
     return dtypes
 
 
+def _write_progress(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    tmp.replace(path)
+
+
 def _iter_batches(
     csv_path: str | Path,
     *,
@@ -54,6 +61,7 @@ def _iter_batches(
     shuffle_within_chunk: bool = True,
     seed: int = 42,
     epoch: int = 0,
+    progress_callback: Callable[[dict], None] | None = None,
 ):
     """Stream alert rows and yield small one-step contextual RL batches.
 
@@ -64,6 +72,8 @@ def _iter_batches(
     """
     rng = np.random.default_rng(seed + epoch)
     dtypes = _model_dtypes()
+    source_rows_seen = 0
+    chunk_index = 0
 
     for chunk in pd.read_csv(
         csv_path,
@@ -72,6 +82,15 @@ def _iter_batches(
         chunksize=chunk_size,
         low_memory=True,
     ):
+        chunk_index += 1
+        source_rows_seen += len(chunk)
+
+        if progress_callback:
+            progress_callback({
+                "source_rows_processed": source_rows_seen,
+                "chunk_index": chunk_index,
+            })
+
         ids = chunk[INCIDENT_ID].astype(str)
 
         if include_incidents is not None:
@@ -260,6 +279,13 @@ def train_streaming(
         if max_total_updates is not None
         else min(25_000, max(1, updates_per_full_pass * epochs))
     )
+    progress_path = Path(
+        os.getenv(
+            "REAL_RL_PROGRESS_PATH",
+            str(Path(train_csv).resolve().parents[2] / "models" / "training_progress.json"),
+        )
+    )
+    chunks_total = math.ceil(train_rows / chunk_size)
 
     model = build_model(
         algorithm,
@@ -291,6 +317,54 @@ def train_streaming(
         updates = 0
         seen_rows = 0
         loss_sum = 0.0
+        streamed_rows = 0
+        streamed_chunks = 0
+
+        _write_progress(progress_path, {
+            "status": "running",
+            "stage": "epoch_in_progress",
+            "algorithm": algorithm_info["algorithm"],
+            "display_name": algorithm_info["display_name"],
+            "epoch": epoch,
+            "epochs": epochs,
+            "completed_epochs": epoch - 1,
+            "source_rows_processed": 0,
+            "source_rows_total": train_rows,
+            "progress_percent": 0.0,
+            "chunks_processed": 0,
+            "chunks_total": chunks_total,
+            "filtered_train_rows_processed": 0,
+            "updates": 0,
+            "total_updates": total_updates,
+            "updated_at": time.time(),
+        })
+
+        def stream_progress(info: dict) -> None:
+            nonlocal streamed_rows, streamed_chunks
+            streamed_rows = int(info.get("source_rows_processed", streamed_rows))
+            streamed_chunks = int(info.get("chunk_index", streamed_chunks))
+            percent = min(100.0, (streamed_rows / train_rows) * 100.0) if train_rows else 0.0
+            payload = {
+                "status": "running",
+                "stage": "epoch_in_progress",
+                "algorithm": algorithm_info["algorithm"],
+                "display_name": algorithm_info["display_name"],
+                "epoch": epoch,
+                "epochs": epochs,
+                "completed_epochs": epoch - 1,
+                "source_rows_processed": streamed_rows,
+                "source_rows_total": train_rows,
+                "progress_percent": round(percent, 2),
+                "chunks_processed": streamed_chunks,
+                "chunks_total": chunks_total,
+                "filtered_train_rows_processed": seen_rows,
+                "updates": updates,
+                "total_updates": total_updates,
+                "updated_at": time.time(),
+            }
+            _write_progress(progress_path, payload)
+            if progress_callback:
+                progress_callback(payload)
 
         for states, rewards, next_states, dones, labels in _iter_batches(
             train_csv,
@@ -301,6 +375,7 @@ def train_streaming(
             shuffle_within_chunk=True,
             seed=seed,
             epoch=epoch,
+            progress_callback=stream_progress,
         ):
             if stop_event is not None and getattr(stop_event, "is_set", lambda: False)():
                 raise RuntimeError("Training stopped by user.")
@@ -421,8 +496,44 @@ def train_streaming(
                 stopping_reason = "validation_patience_exhausted"
                 row["stopping_reason"] = stopping_reason
 
+        _write_progress(progress_path, {
+            "status": "running",
+            "stage": "epoch_completed",
+            "algorithm": algorithm_info["algorithm"],
+            "display_name": algorithm_info["display_name"],
+            "epoch": epoch,
+            "epochs": epochs,
+            "completed_epochs": epoch,
+            "source_rows_processed": train_rows,
+            "source_rows_total": train_rows,
+            "progress_percent": 100.0,
+            "chunks_processed": chunks_total,
+            "chunks_total": chunks_total,
+            "filtered_train_rows_processed": seen_rows,
+            "updates": updates,
+            "total_updates": total_updates,
+            "updated_at": time.time(),
+        })
+
         if progress_callback:
-            progress_callback(row)
+            progress_callback({
+                "status": "running",
+                "stage": "epoch_completed",
+                "algorithm": algorithm_info["algorithm"],
+                "display_name": algorithm_info["display_name"],
+                "epoch": epoch,
+                "epochs": epochs,
+                "completed_epochs": epoch,
+                "source_rows_processed": train_rows,
+                "source_rows_total": train_rows,
+                "progress_percent": 100.0,
+                "chunks_processed": chunks_total,
+                "chunks_total": chunks_total,
+                "filtered_train_rows_processed": seen_rows,
+                "updates": updates,
+                "total_updates": total_updates,
+                "updated_at": time.time(),
+            })
 
         if row["stopping_reason"]:
             break
@@ -436,6 +547,25 @@ def train_streaming(
         model.save(str(checkpoint_path))
 
     final_epoch = metrics[-1]["epoch"] if metrics else 0
+    _write_progress(progress_path, {
+        "status": "completed",
+        "stage": "training_completed",
+        "algorithm": algorithm_info["algorithm"],
+        "display_name": algorithm_info["display_name"],
+        "epoch": final_epoch,
+        "epochs": epochs,
+        "completed_epochs": final_epoch,
+        "source_rows_processed": train_rows,
+        "source_rows_total": train_rows,
+        "progress_percent": 100.0,
+        "chunks_processed": chunks_total,
+        "chunks_total": chunks_total,
+        "filtered_train_rows_processed": metrics[-1]["rows_seen"] if metrics else 0,
+        "updates": total_updates,
+        "total_updates": total_updates,
+        "updated_at": time.time(),
+    })
+
     result = {
         "config": {
             **algorithm_info,
