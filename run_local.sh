@@ -48,7 +48,7 @@ export PYTHONPATH="$ROOT_DIR/backend:$ROOT_DIR"
 # ---------------------------------------------------------------------------
 # HARD-DATA TRAINING DEFAULTS
 # Match the original RL_Agent early-stopping policy while keeping the new
-# alert-level streaming implementation RAM-safe.
+# alert-level streaming implementation RAM-safe and faster on a 12 GiB host.
 #
 # 4000 = hard upper bound, not a target. The trainer saves the best validation
 # checkpoint and stops after the configured patience window, then restores the
@@ -57,15 +57,15 @@ export PYTHONPATH="$ROOT_DIR/backend:$ROOT_DIR"
 export REAL_RL_MAX_EPOCHS="${REAL_RL_MAX_EPOCHS:-4000}"
 export REAL_RL_MIN_EPOCHS="${REAL_RL_MIN_EPOCHS:-20}"
 export REAL_RL_PATIENCE="${REAL_RL_PATIENCE:-10}"
-export REAL_RL_EVAL_EVERY="${REAL_RL_EVAL_EVERY:-1}"
+export REAL_RL_EVAL_EVERY="${REAL_RL_EVAL_EVERY:-2}"
 export REAL_RL_MIN_DELTA="${REAL_RL_MIN_DELTA:-0.001}"
 export REAL_RL_MAX_TOTAL_UPDATES="${REAL_RL_MAX_TOTAL_UPDATES:-5000000}"
-export REAL_RL_CHUNK_SIZE="${REAL_RL_CHUNK_SIZE:-50000}"
-export REAL_RL_BATCH_SIZE="${REAL_RL_BATCH_SIZE:-512}"
-export RL_TORCH_THREADS="${RL_TORCH_THREADS:-2}"
-export OMP_NUM_THREADS="${OMP_NUM_THREADS:-2}"
-export MKL_NUM_THREADS="${MKL_NUM_THREADS:-2}"
-export OPENBLAS_NUM_THREADS="${OPENBLAS_NUM_THREADS:-2}"
+export REAL_RL_CHUNK_SIZE="${REAL_RL_CHUNK_SIZE:-100000}"
+export REAL_RL_BATCH_SIZE="${REAL_RL_BATCH_SIZE:-2048}"
+export RL_TORCH_THREADS="${RL_TORCH_THREADS:-4}"
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-4}"
+export MKL_NUM_THREADS="${MKL_NUM_THREADS:-4}"
+export OPENBLAS_NUM_THREADS="${OPENBLAS_NUM_THREADS:-4}"
 
 # Frontend live-data polling. The Alerts page uses this shared interval.
 export VITE_POLL_INTERVAL_MS="${VITE_POLL_INTERVAL_MS:-2000}"
@@ -151,6 +151,7 @@ Hard-data training defaults:
   Max update cap   : $REAL_RL_MAX_TOTAL_UPDATES
   Chunk size       : $REAL_RL_CHUNK_SIZE
   Batch size       : $REAL_RL_BATCH_SIZE
+  Torch threads    : $RL_TORCH_THREADS
 
 Frontend polling:
   $VITE_POLL_INTERVAL_MS ms
