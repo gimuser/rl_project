@@ -118,7 +118,7 @@ def _legacy_candidates() -> list[dict[str, Any]]:
     for path in MODELS_DIR.rglob("*.json"):
         if "training_runs" in path.parts or "__pycache__" in path.parts:
             continue
-        if path.name not in {"training_metrics.json", "training_run.json"} and "training" not in path.name.lower() and "experiment" not in path.name.lower():
+        if not ("training" in path.name.lower() or "experiment" in path.name.lower()):
             continue
         candidate = _candidate_from_json(path, _load(path))
         if candidate:
@@ -244,6 +244,6 @@ def load_run(run_id: str) -> dict[str, Any] | None:
         if str(candidate.get("run_id")) != run_id:
             continue
         source = Path(str(candidate["source_path"]))
-        return _status_shape(run_id, "legacy", _load(source), _load(source.parent / "real_test_metrics.json"), _load(source.parent / "model_comparison.json"), _load(source.parent / "live_inference.json"), _load(source.parent / "training_run.json"), _load(source.parent / "training_progress.json"), {"legacy": True, "source_path": str(source), "metric_count": candidate.get("metric_count")})
+        return _status_shape(run_id, "legacy", _load(source), {}, {}, {}, {}, {}, {"legacy": True, "source_path": str(source), "metric_count": candidate.get("metric_count")})
 
     return None
