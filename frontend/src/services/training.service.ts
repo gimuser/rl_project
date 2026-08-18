@@ -1,4 +1,5 @@
 import { apiRequest } from "./api";
+import { ApiError } from "../types/api";
 
 export type ValidationMetrics = {
   policy_optimality?: number | null;
@@ -205,16 +206,35 @@ export type TrainingStartPayload = {
 export const getAuthoritativeFullTrainingStatus = () =>
   apiRequest<AuthoritativeTrainingStatus>("/api/training-control");
 
-export const startAuthoritativeFullTraining = (payload: TrainingStartPayload = {}) =>
-  apiRequest<{ status: string; message?: string; selected_models?: string[]; run_id?: string }>("/api/training-control", {
-    method: "POST",
-    body: JSON.stringify({
-      model_names: payload.modelNames ?? ["double_dqn"],
-      training: payload.training,
-      model_configs: payload.modelConfigs,
-      rewards: payload.rewards,
-    }),
-  });
+export const startAuthoritativeFullTraining = async (payload: TrainingStartPayload = {}) => {
+  try {
+    return await apiRequest<{
+      status: string;
+      message?: string;
+      selected_models?: string[];
+      run_id?: string;
+    }>("/api/training-control", {
+      method: "POST",
+      body: JSON.stringify({
+        model_names: payload.modelNames ?? ["double_dqn"],
+        training: payload.training,
+        model_configs: payload.modelConfigs,
+        rewards: payload.rewards,
+      }),
+    });
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 409) {
+      const active = await getAuthoritativeFullTrainingStatus();
+      return {
+        status: "already_running",
+        message: active.message ?? "A training experiment is already running.",
+        selected_models: active.results?.training?.selected_models,
+        run_id: active.run_id ?? active.results?.run_id ?? undefined,
+      };
+    }
+    throw error;
+  }
+};
 
 export const stopAuthoritativeFullTraining = () =>
   apiRequest<{ status: string; message?: string }>("/api/training-control/stop", { method: "POST" });
