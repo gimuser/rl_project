@@ -4,6 +4,7 @@ import gc
 import json
 import math
 import os
+import subprocess
 import time
 from pathlib import Path
 from typing import Callable
@@ -202,8 +203,14 @@ def evaluate_streaming(
 
 
 def _count_rows(path: str | Path) -> int:
-    with Path(path).open("rb") as handle:
-        return max(0, sum(1 for _ in handle) - 1)
+    """Fast OS-level row count; never iterate over CSV rows in Python."""
+    result = subprocess.run(
+        ["wc", "-l", str(path)],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return max(0, int(result.stdout.strip().split()[0]) - 1)
 
 
 def train_streaming(
