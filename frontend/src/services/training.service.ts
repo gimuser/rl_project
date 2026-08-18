@@ -10,6 +10,37 @@ export type CandidateValidation = {
   reward_efficiency?: number | null;
 };
 
+export type TrainingModelConfig = {
+  name: string;
+  learning_rate: number;
+  gamma: number;
+  batch_size: number;
+  hidden_dim: number;
+  max_total_updates: number;
+  cql_alpha?: number;
+  iql_expectile?: number;
+  iql_beta?: number;
+  bcq_threshold?: number;
+};
+
+export type TrainingGlobalConfig = {
+  max_epochs: number;
+  min_epochs: number;
+  patience: number;
+  validation_every: number;
+  min_delta: number;
+  max_total_updates: number;
+  chunk_size: number;
+  train_ratio: number;
+  validation_seed: number;
+  seed: number;
+  target_update: number;
+  metric_sample_rows: number;
+  telemetry_window: number;
+};
+
+export type RewardConfig = Record<string, Record<string, number>>;
+
 export type ModelCandidate = {
   name?: string | null;
   algorithm?: string | null;
@@ -80,14 +111,19 @@ export type AuthoritativeResults = {
     candidate_count?: number | null;
     selected_models?: string[];
     learning_rate?: number | null;
+    gamma?: number | null;
     epochs?: number | null;
     actual_epochs?: number | null;
     min_epochs?: number | null;
     patience?: number | null;
     min_delta?: number | null;
+    validation_every?: number | null;
     stability_window?: number | null;
     stability_tolerance?: number | null;
     batch_size?: number | null;
+    chunk_size?: number | null;
+    hidden_dim?: number | null;
+    target_update?: number | null;
     updates_per_epoch?: number | null;
     max_total_updates?: number | null;
     total_updates_used?: number | null;
@@ -159,13 +195,25 @@ export type AuthoritativeTrainingStatus = {
   results?: AuthoritativeResults | null;
 };
 
+export type TrainingStartPayload = {
+  modelNames: string[];
+  training: TrainingGlobalConfig;
+  modelConfigs: TrainingModelConfig[];
+  rewards: RewardConfig;
+};
+
 export const getAuthoritativeFullTrainingStatus = () =>
   apiRequest<AuthoritativeTrainingStatus>("/api/training-control");
 
-export const startAuthoritativeFullTraining = (modelNames: string[] = []) =>
+export const startAuthoritativeFullTraining = (payload: TrainingStartPayload) =>
   apiRequest<{ status: string; message?: string; selected_models?: string[]; run_id?: string }>("/api/training-control", {
     method: "POST",
-    body: JSON.stringify({ model_names: modelNames }),
+    body: JSON.stringify({
+      model_names: payload.modelNames,
+      training: payload.training,
+      model_configs: payload.modelConfigs,
+      rewards: payload.rewards,
+    }),
   });
 
 export const stopAuthoritativeFullTraining = () =>
