@@ -123,7 +123,6 @@ export function TrainingRunViewer() {
           <article className="best-card"><span>UNSEEN TEST REWARD</span><strong>{evaluation?.average_reward != null ? evaluation.average_reward.toFixed(4) : "—"}</strong><small>Final unseen-incident evaluation</small></article>
           <article className="best-card"><span>TEST OPTIMALITY</span><strong>{evaluation?.policy_optimality != null ? `${(evaluation.policy_optimality * 100).toFixed(1)}%` : "—"}</strong><small>Agent action vs best available action</small></article>
           <article className="best-card"><span>TEST EFFICIENCY</span><strong>{evaluation?.reward_efficiency != null ? `${(evaluation.reward_efficiency * 100).toFixed(1)}%` : "—"}</strong><small>Real-data evaluation</small></article>
-          <article className="best-card"><span>RUN ID</span><strong>{runId}</strong><small>Persisted historical artifact</small></article>
         </section>
       </>}
     </div>
