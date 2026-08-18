@@ -299,7 +299,7 @@ def agent_status() -> dict[str, Any]:
     decisions = alerts_collection.count_documents({"agent.status": "INFERRED"})
     return {
         "status": "ONLINE",
-        "mode": "LIVE_ALERT_HOLDOUT",
+        "mode": "LIVE_ALERT_HOLDOUT" if total else "READY_FOR_LIVE_HOLDOUT",
         "training": False,
         "training_status": "NOT_RUNNING",
         "model_status": "READY" if model_meta else "NOT_AVAILABLE",
@@ -357,7 +357,9 @@ def get_system_status() -> dict[str, Any]:
 
 
 def bootstrap() -> None:
+    # Startup only prepares MongoDB indexes. Live holdout records are created
+    # explicitly by the live-cycle service after training or by a live-cycle API.
     ensure_indexes()
-    seed_live_alerts()
+
 
 bootstrap()
