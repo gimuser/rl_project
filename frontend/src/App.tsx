@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
 import { ToastProvider } from "./components/ui/ToastProvider";
+import { TrainingStopOverlay } from "./components/training/TrainingStopOverlay";
 import { AgentPage } from "./pages/Agent";
 import { AlertDetailsPage } from "./pages/AlertDetails";
 import { AlertsPage } from "./pages/Alerts";
@@ -15,7 +16,7 @@ import { TrainingLauncherLiveAccess } from "./pages/TrainingLauncherLiveAccess";
 import { TrainingLive } from "./pages/TrainingLive";
 
 export default function App() {
-  return <ToastProvider><Routes>
+  return <ToastProvider><TrainingStopOverlay /><Routes>
     <Route path="/login" element={<LoginPage />} />
     <Route element={<AppLayout />}>
       <Route path="/dashboard" element={<DashboardPage />} />
