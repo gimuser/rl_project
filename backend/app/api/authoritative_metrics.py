@@ -11,22 +11,44 @@ router = APIRouter(prefix="/api/authoritative-metrics", tags=["Authoritative Met
 SUPPORTED_ALGORITHMS = {"double_dqn", "cql"}
 
 
+def _evaluation_is_populated(run: dict[str, Any]) -> bool:
+    results = run.get("results") if isinstance(run.get("results"), dict) else {}
+    evaluation = results.get("evaluation") if isinstance(results.get("evaluation"), dict) else {}
+    return any(
+        isinstance(evaluation.get(key), (int, float))
+        for key in ("average_reward", "policy_optimality", "reward_efficiency", "reward_regret", "throughput_rows_per_second")
+    ) or bool(evaluation.get("action_distribution")) or bool(evaluation.get("per_class"))
+
+
 def _latest_supported_run() -> dict[str, Any] | None:
+    fallback: dict[str, Any] | None = None
+
     for run in list_runs():
         algorithm = str(run.get("algorithm") or "").lower()
         if algorithm not in SUPPORTED_ALGORITHMS:
             continue
+
         run_id = str(run.get("run_id") or "")
         if not run_id:
             continue
+
         loaded = load_run(run_id)
         if not loaded:
             continue
+
         status = str(loaded.get("status") or "")
         if status not in {"completed", "stopped", "failed", "current"}:
             continue
-        return loaded
-    return None
+
+        if fallback is None:
+            fallback = loaded
+
+        # Metrics should represent the latest run that actually has a persisted
+        # unseen-test evaluation, not a newer telemetry-only/legacy artifact.
+        if _evaluation_is_populated(loaded):
+            return loaded
+
+    return fallback
 
 
 @router.get("")
@@ -35,7 +57,14 @@ def authoritative_metrics():
     if not run:
         return {
             "status": "unavailable",
-            "training": {"epochs": None, "history": [], "latest_loss": None, "latest_reward": None, "algorithm": None, "run_id": None},
+            "training": {
+                "epochs": None,
+                "history": [],
+                "latest_loss": None,
+                "latest_reward": None,
+                "algorithm": None,
+                "run_id": None,
+            },
             "evaluation": {},
         }
 
