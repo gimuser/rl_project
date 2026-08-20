@@ -1,9 +1,209 @@
 {
-  "status": "running",
-  "run_id": "e5c0b873d1d5489fa86524e68ac44338",
+  "status": "selected",
+  "run_id": "94277407b6c24816afdc0d340a2fbe36",
   "selected_models": [
     "double_dqn"
   ],
-  "candidates": [],
-  "best": null
+  "data_mode": "hard_alert_streaming",
+  "selection_rule": "0.70 * validation_policy_optimality + 0.30 * validation_reward_efficiency",
+  "test_used_for_selection": false,
+  "candidates": [
+    {
+      "run_id": "94277407b6c24816afdc0d340a2fbe36",
+      "name": "double_dqn",
+      "algorithm": "double_dqn",
+      "display_name": "Double DQN",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "research_warning": null,
+      "learning_rate": 0.001,
+      "gamma": 0.95,
+      "batch_size": 2048,
+      "chunk_size": 100000,
+      "max_total_updates": 5000000,
+      "actual_epochs": 80,
+      "best_epoch": 60,
+      "best_validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 620669.5,
+        "average_reward": 1.0418375311584656,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.6013111882607283,
+        "policy_optimality": 0.7905194336503034,
+        "action_distribution": {
+          "allow": 319049,
+          "block": 252639,
+          "human_review": 24057
+        },
+        "evaluation_time_seconds": 10.236095138010569,
+        "throughput_rows_per_second": 58200.4164642598,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.2972480516758447,
+            "optimality": 0.8648320344505631
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.38764160558190586,
+            "optimality": 0.2584277370546039
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.0783396836393027,
+            "optimality": 0.5391698418196513
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.498188679245283,
+            "optimality": 0.9987924528301887
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7337569600334308,
+      "model_path": "/home/oualid/Desktop/Data_mission/RL_Agent/models/experiments/94277407b6c24816afdc0d340a2fbe36__double_dqn.pt",
+      "stopping_reason": "validation_patience_exhausted",
+      "status": "trained",
+      "data_mode": "hard_alert_streaming",
+      "representative_incident_training": false,
+      "test_used_for_selection": false
+    }
+  ],
+  "best": {
+    "run_id": "94277407b6c24816afdc0d340a2fbe36",
+    "name": "double_dqn",
+    "algorithm": "double_dqn",
+    "display_name": "Double DQN",
+    "behavior_action_mode": "counterfactual_reward_matrix",
+    "research_warning": null,
+    "learning_rate": 0.001,
+    "gamma": 0.95,
+    "batch_size": 2048,
+    "chunk_size": 100000,
+    "max_total_updates": 5000000,
+    "actual_epochs": 80,
+    "best_epoch": 60,
+    "best_validation": {
+      "rows": 595745,
+      "incidents": 69814,
+      "total_reward": 620669.5,
+      "average_reward": 1.0418375311584656,
+      "oracle_average_reward": 1.7326095896734341,
+      "reward_efficiency": 0.6013111882607283,
+      "policy_optimality": 0.7905194336503034,
+      "action_distribution": {
+        "allow": 319049,
+        "block": 252639,
+        "human_review": 24057
+      },
+      "evaluation_time_seconds": 10.236095138010569,
+      "throughput_rows_per_second": 58200.4164642598,
+      "per_class": {
+        "BenignPositive": {
+          "rows": 209924,
+          "average_reward": 1.2972480516758447,
+          "optimality": 0.8648320344505631
+        },
+        "FalsePositive": {
+          "rows": 102044,
+          "average_reward": 0.38764160558190586,
+          "optimality": 0.2584277370546039
+        },
+        "TruePositive": {
+          "rows": 277152,
+          "average_reward": 1.0783396836393027,
+          "optimality": 0.5391698418196513
+        },
+        "Unknown": {
+          "rows": 6625,
+          "average_reward": 1.498188679245283,
+          "optimality": 0.9987924528301887
+        }
+      },
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true
+    },
+    "validation_score": 0.7337569600334308,
+    "model_path": "/home/oualid/Desktop/Data_mission/RL_Agent/models/experiments/94277407b6c24816afdc0d340a2fbe36__double_dqn.pt",
+    "stopping_reason": "validation_patience_exhausted",
+    "status": "CHAMPION",
+    "data_mode": "hard_alert_streaming",
+    "representative_incident_training": false,
+    "test_used_for_selection": false,
+    "model_version": "Double DQN-20260818T230008Z-627be50fcf",
+    "test_metrics": {
+      "rows": 2413711,
+      "incidents": 236267,
+      "total_reward": 2324312.0,
+      "average_reward": 0.962962011607852,
+      "oracle_average_reward": 1.7365670538022158,
+      "reward_efficiency": 0.5545204888572804,
+      "policy_optimality": 0.7687229332757732,
+      "action_distribution": {
+        "allow": 1315140,
+        "block": 1029153,
+        "human_review": 69418
+      },
+      "evaluation_time_seconds": 7.882177853985922,
+      "throughput_rows_per_second": 306223.8691784169,
+      "per_class": {
+        "BenignPositive": {
+          "rows": 822092,
+          "average_reward": 1.2734575327335627,
+          "optimality": 0.8489716884890418
+        },
+        "FalsePositive": {
+          "rows": 449610,
+          "average_reward": 0.36928171081604055,
+          "optimality": 0.24618780721069372
+        },
+        "TruePositive": {
+          "rows": 1142009,
+          "average_reward": 0.9731797210004475,
+          "optimality": 0.48658986050022374
+        }
+      },
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "run_id": "94277407b6c24816afdc0d340a2fbe36",
+      "algorithm": "double_dqn",
+      "model_name": "Double DQN",
+      "model_version": "Double DQN-20260818T230008Z-627be50fcf",
+      "test_used_for_selection": false,
+      "test_is_unseen_incident_holdout": true
+    },
+    "live_holdout": {
+      "status": "completed",
+      "cycle_id": "CYCLE-20260818T230016Z-f65e019f",
+      "decision_cycle_id": "CYCLE-20260818T230016Z-f65e019f",
+      "model_version": "Double DQN-20260818T230008Z-627be50fcf",
+      "model_name": "Double DQN",
+      "algorithm": "double_dqn",
+      "confidence_threshold": 0.6,
+      "margin_threshold": 0.15,
+      "alerts_considered": 80,
+      "alerts_processed": 80,
+      "human_review_routed": 15,
+      "action_distribution": {
+        "allow": 35,
+        "block": 30,
+        "human_review": 15
+      },
+      "errors": [],
+      "duration_seconds": 0.17644088200177066,
+      "expected_live_alerts": 80,
+      "full_live_holdout": true,
+      "cycle": {
+        "cycle_id": "CYCLE-20260818T230016Z-f65e019f",
+        "status": "ACTIVE",
+        "reason": "champion_model_full_live_holdout",
+        "alerts": 80,
+        "archived_alerts": 80,
+        "source_preserved": true,
+        "started_at": "2026-08-18T23:00:16.677606+00:00"
+      }
+    }
+  }
 }

@@ -1,11 +1,11 @@
 {
-  "run_id": "e5c0b873d1d5489fa86524e68ac44338",
-  "status": "stopped",
+  "run_id": "94277407b6c24816afdc0d340a2fbe36",
+  "status": "completed",
   "selected_models": [
     "double_dqn"
   ],
-  "started_at": "2026-08-16T22:10:19.372497+00:00",
-  "pid": 111927,
-  "stopped_at": "2026-08-16T22:11:15.054897+00:00",
-  "return_code": -15
+  "started_at": "2026-08-18T21:38:29.341595+00:00",
+  "pid": 1321214,
+  "return_code": 0,
+  "finished_at": "2026-08-18T23:00:19.404478+00:00"
 }

@@ -1,8 +1,20 @@
 {
-  "status": "idle",
-  "run_id": "e5c0b873d1d5489fa86524e68ac44338",
-  "alerts_considered": 0,
-  "alerts_processed": 0,
-  "human_review_routed": 0,
-  "action_distribution": {}
+  "status": "completed",
+  "cycle_id": "CYCLE-20260818T230019Z-fbf88f0a",
+  "decision_cycle_id": "CYCLE-20260818T230019Z-fbf88f0a",
+  "model_version": "Double DQN-20260818T230008Z-627be50fcf",
+  "model_name": "Double DQN",
+  "algorithm": "double_dqn",
+  "confidence_threshold": 0.6,
+  "margin_threshold": 0.15,
+  "alerts_considered": 80,
+  "alerts_processed": 80,
+  "human_review_routed": 15,
+  "action_distribution": {
+    "allow": 35,
+    "block": 30,
+    "human_review": 15
+  },
+  "errors": [],
+  "duration_seconds": 0.14439815099467523
 }
