@@ -26,7 +26,9 @@ else
 fi
 
 # Build the backend with a temporary CPU-only Dockerfile/Compose override.
-# This keeps the project's requirements.txt and permanent Dockerfile unchanged.
+# The permanent requirements.txt and Dockerfile are deliberately not changed.
+# The backend image installs only runtime dependencies needed by this project;
+# PyTorch is always taken from the official CPU-only wheel index.
 TMP_DOCKER_DIR="$ROOT_DIR/.run_all_docker"
 TMP_DOCKERFILE="$TMP_DOCKER_DIR/Dockerfile.cpu"
 TMP_COMPOSE="$TMP_DOCKER_DIR/docker-compose.cpu.yml"
@@ -44,29 +46,27 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt /tmp/requirements.txt
-
-# Install every dependency except torch from the project's normal requirements.
-# Then install PyTorch explicitly from the CPU wheel index so CUDA packages are
-# never selected during the Docker build.
-RUN python - <<'PY'
-from pathlib import Path
-src = Path('/tmp/requirements.txt').read_text()
-out = []
-for line in src.splitlines():
-    stripped = line.strip()
-    if stripped.startswith('#'):
-        out.append(line)
-        continue
-    name = stripped.split('#', 1)[0].strip()
-    if name.startswith(('torch=', 'torch<', 'torch>', 'torch~=', 'torch==', 'torch!=')):
-        continue
-    if name == 'torch':
-        continue
-    out.append(line)
-Path('/tmp/requirements.cpu.txt').write_text('\n'.join(out) + '\n')
-PY
-RUN python -m pip install --no-cache-dir --disable-pip-version-check -r /tmp/requirements.cpu.txt \
+# Minimal CPU-only backend dependencies. Do not install from the repository
+# requirements file here: it is intentionally decoupled from the validation image.
+COPY /dev/null /tmp/requirements.cpu.txt
+RUN printf '%s\n' \
+    'fastapi' \
+    'uvicorn' \
+    'pydantic' \
+    'pydantic-settings' \
+    'python-multipart' \
+    'numpy' \
+    'pandas' \
+    'scikit-learn' \
+    'scipy' \
+    'gymnasium' \
+    'python-dotenv' \
+    'requests' \
+    'httpx' \
+    'pymongo' \
+    'psutil' \
+    > /tmp/requirements.cpu.txt \
+    && python -m pip install --no-cache-dir --disable-pip-version-check -r /tmp/requirements.cpu.txt \
     && python -m pip install --no-cache-dir --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch \
     && python -c "import torch; assert torch.version.cuda is None and not torch.cuda.is_available(); print('PyTorch CPU-only:', torch.__version__)"
 
@@ -87,7 +87,7 @@ services:
 YAML
 
 log "Using Docker Compose for the project validation stack."
-log "CPU-only backend build override enabled; permanent Docker requirements are unchanged."
+log "CPU-only minimal backend dependencies enabled; permanent requirements are unchanged."
 log "Building and starting MongoDB, backend and frontend..."
 
 COMPOSE_CPU=("${COMPOSE[@]}" -f "$TMP_COMPOSE")
@@ -106,7 +106,7 @@ wait_for_url() {
       return 0
     fi
     sleep 1
-done
+  done
 
   log "$label did not become ready. Container status:"
   "${COMPOSE_CPU[@]}" ps >&2 || true
