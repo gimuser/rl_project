@@ -35,7 +35,35 @@ models/experiments/
 .live_80_work/
 .start_point_work/
 
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+ENV/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
 # Node dependencies
 node_modules/
 frontend/node_modules/
 backend/node_modules/
+
+# Frontend build output
+frontend/dist/
+dist/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
