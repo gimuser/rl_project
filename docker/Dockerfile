@@ -2,13 +2,13 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# copy only requirements first to leverage Docker layer caching
-COPY backend/requirements.txt ./backend/requirements.txt
+# Use the single repository-level dependency manifest.
+COPY requirements.txt ./requirements.txt
 
-# install all backend requirements
-RUN pip install --no-cache-dir -r ./backend/requirements.txt
+# Install backend runtime dependencies.
+RUN pip install --no-cache-dir -r ./requirements.txt
 
-# copy application code
+# Copy application code and runtime data used by the backend.
 COPY backend ./backend
 COPY data ./data
 COPY README.md ./README.md
