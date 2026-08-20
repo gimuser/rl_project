@@ -97,26 +97,24 @@ ensure_port_free_or_project_owned() {
   fi
 }
 
-ensure_mongodb() {
-  if "$PYTHON" - "$MONGO_PORT" <<'PY' >/dev/null 2>&1
-import socket, sys
-port = int(sys.argv[1])
-s = socket.socket()
-s.settimeout(0.5)
-try:
-    s.connect(("127.0.0.1", port))
-except OSError:
-    raise SystemExit(1)
-finally:
-    s.close()
+mongo_ping() {
+  "$PYTHON" - "$MONGO_URI" <<'PY' >/dev/null 2>&1
+from pymongo import MongoClient
+import sys
+client = MongoClient(sys.argv[1], serverSelectionTimeoutMS=1000)
+client.admin.command("ping")
+client.close()
 PY
-  then
-    log "MongoDB is already reachable on 127.0.0.1:${MONGO_PORT}."
+}
+
+ensure_mongodb() {
+  if mongo_ping; then
+    log "MongoDB is already reachable at ${MONGO_URI}."
     return 0
   fi
 
   if ! command -v docker >/dev/null 2>&1; then
-    die "MongoDB is not reachable on 127.0.0.1:${MONGO_PORT}, and Docker is not installed. Install MongoDB or Docker, then rerun."
+    die "MongoDB is not reachable at ${MONGO_URI}, and Docker is not installed. Install MongoDB or Docker, then rerun."
   fi
   if ! docker info >/dev/null 2>&1; then
     die "MongoDB is not reachable and the Docker daemon is not running. Start Docker, then rerun."
@@ -135,21 +133,10 @@ PY
   fi
 
   for _ in {1..60}; do
-    if "$PYTHON" - "$MONGO_PORT" <<'PY' >/dev/null 2>&1
-import socket, sys
-port = int(sys.argv[1])
-s = socket.socket(); s.settimeout(0.5)
-try:
-    s.connect(("127.0.0.1", port))
-except OSError:
-    raise SystemExit(1)
-finally:
-    s.close()
-PY
-    then return 0; fi
+    if mongo_ping; then return 0; fi
     sleep 0.5
   done
-  die "MongoDB container started but port ${MONGO_PORT} did not become reachable within 30 seconds."
+  die "MongoDB container started but did not become ready within 30 seconds."
 }
 
 ensure_port_free_or_project_owned "$BACKEND_PORT"
