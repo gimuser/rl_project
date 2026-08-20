@@ -5,8 +5,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
 COMPOSE_FILE="${COMPOSE_FILE:-$ROOT_DIR/docker-compose.yml}"
-FRONTEND_PORT="${FRONTEND_PORT:-}"
-BACKEND_PORT="${BACKEND_PORT:-}"
+FRONTEND_PORT="${FRONTEND_PORT:-8081}"
+BACKEND_PORT="${BACKEND_PORT:-8000}"
 FRONTEND_URL=""
 BACKEND_URL=""
 
@@ -24,6 +24,60 @@ elif command -v docker-compose >/dev/null 2>&1; then
 else
   die "Docker Compose is required."
 fi
+
+# Select host ports BEFORE docker compose up. This is important because
+# Compose must bind the host port while creating the container; discovering
+# the port after `up` is too late when the default port is already occupied.
+port_in_use() {
+  local port="$1"
+
+  if command -v ss >/dev/null 2>&1; then
+    ss -ltnH 2>/dev/null | awk '{print $4}' | grep -Eq "(^|[.:])${port}$"
+    return $?
+  fi
+
+  if command -v lsof >/dev/null 2>&1; then
+    lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1
+    return $?
+  fi
+
+  # If neither tool is available, let Compose perform the definitive check.
+  return 1
+}
+
+find_free_port() {
+  local requested="$1"
+  local port="$requested"
+
+  [[ "$port" =~ ^[0-9]+$ ]] || die "Invalid port: $requested"
+
+  while port_in_use "$port"; do
+    log "Host port ${port} is already in use; trying ${port}+1."
+    port=$((port + 1))
+    [[ "$port" -le 65535 ]] || die "No free host port found starting from ${requested}."
+  done
+
+  printf '%s' "$port"
+}
+
+# Keep user-provided port preferences, but automatically move to the next
+# available port when another application/container already owns the port.
+REQUESTED_BACKEND_PORT="$BACKEND_PORT"
+REQUESTED_FRONTEND_PORT="$FRONTEND_PORT"
+BACKEND_PORT="$(find_free_port "$REQUESTED_BACKEND_PORT")"
+FRONTEND_PORT="$(find_free_port "$REQUESTED_FRONTEND_PORT")"
+
+# Prevent accidental collision when both requested ports were configured to
+# the same currently-free value.
+if [[ "$FRONTEND_PORT" == "$BACKEND_PORT" ]]; then
+  FRONTEND_PORT="$(find_free_port "$((FRONTEND_PORT + 1))")"
+fi
+
+# Compose reads BACKEND_PORT/FRONTEND_PORT from the process environment.
+export BACKEND_PORT FRONTEND_PORT
+
+log "Selected backend host port: ${BACKEND_PORT}"
+log "Selected frontend host port: ${FRONTEND_PORT}"
 
 # Build the backend with a temporary CPU-only Dockerfile/Compose override.
 # The permanent requirements.txt and Dockerfile are deliberately not changed.
@@ -119,33 +173,11 @@ log "Building and starting MongoDB, backend and frontend..."
 COMPOSE_CPU=("${COMPOSE[@]}" -f "$TMP_COMPOSE")
 "${COMPOSE_CPU[@]}" up -d --build || die "Docker Compose failed to build/start the project."
 
-# Resolve the actual published host ports from Compose instead of assuming them.
-# This avoids false readiness failures when docker-compose.yml uses different defaults.
-resolve_published_port() {
-  local service="$1"
-  local container_port="$2"
-  local value=""
-
-  value=$("${COMPOSE_CPU[@]}" port "$service" "$container_port" 2>/dev/null | head -n 1 | awk -F: '{print $NF}' || true)
-  [[ "$value" =~ ^[0-9]+$ ]] || return 1
-  printf '%s' "$value"
-}
-
-if [[ -z "$BACKEND_PORT" ]]; then
-  BACKEND_PORT="$(resolve_published_port backend 8000 || true)"
-fi
-if [[ -z "$FRONTEND_PORT" ]]; then
-  FRONTEND_PORT="$(resolve_published_port frontend 80 || true)"
-fi
-
-[[ "$BACKEND_PORT" =~ ^[0-9]+$ ]] || die "Could not determine the published backend port from Docker Compose."
-[[ "$FRONTEND_PORT" =~ ^[0-9]+$ ]] || die "Could not determine the published frontend port from Docker Compose."
-
 BACKEND_URL="http://127.0.0.1:${BACKEND_PORT}"
 FRONTEND_URL="http://127.0.0.1:${FRONTEND_PORT}"
 
-log "Resolved backend port: ${BACKEND_PORT}"
-log "Resolved frontend port: ${FRONTEND_PORT}"
+log "Backend URL: ${BACKEND_URL}"
+log "Frontend URL: ${FRONTEND_URL}"
 
 wait_for_url() {
   local url="$1"
