@@ -4,9 +4,9 @@ Reinforcement Learning agent for autonomous security-alert triage and analyst wo
 
 ## 1. Project overview
 
-SOAR-RL-Agent is a full-stack research and validation project that combines a security-alert data pipeline, a Gymnasium-compatible RL environment, reward modeling, offline RL algorithms, a FastAPI backend, a MongoDB persistence layer, and a web dashboard.
+SOAR-RL-Agent is a full-stack research and validation project combining a security-alert data pipeline, a Gymnasium-compatible RL environment, reward modeling, offline RL, a FastAPI backend, MongoDB persistence, and a web dashboard.
 
-The central task is to learn a decision policy that maps an incoming security-alert state to an operational triage action such as **allow**, **block**, or **human_review**. The system uses a contextual, one-step decision setting: the agent observes the alert state, evaluates available actions through the project reward model, and selects the action with the best expected utility.
+The central task is to learn a decision policy that maps an incoming security-alert state to an operational triage action such as **allow**, **block**, or **human_review**. The system uses a contextual, one-step decision setting: the agent observes the alert state, evaluates the available actions through the project reward model, and selects the action with the best expected utility.
 
 The repository contains the complete application stack used for validation:
 
@@ -55,10 +55,7 @@ Reward model                  RL policy / Q-network
              SOAR / analyst
                    |
                    v
-        operational feedback
-                   |
-                   v
-          monitoring + evaluation
+        monitoring + evaluation
 ```
 
 ## 3. Dataset
@@ -181,7 +178,7 @@ The current implementation uses a **one-step contextual** formulation. Each aler
 
 ### 6.1 Double DQN — current selected model
 
-**Double Deep Q-Network (Double DQN)** is the current selected algorithm.
+**Double Deep Q-Network (Double DQN)** is the current selected algorithm and the main reproducible training/evaluation path.
 
 The recorded model-selection configuration includes:
 
@@ -203,30 +200,11 @@ The model-selection rule is:
 
 The unseen test set is not used for model selection.
 
-### 6.2 CQL — available offline-RL implementation
+### 6.2 CQL — second project algorithm
 
-**Conservative Q-Learning (CQL)** is implemented and marked as ready in the algorithm plan. It is intended for conservative offline policy learning.
+**Conservative Q-Learning (CQL)** is the second offline-RL algorithm in the project. It is included as an alternative conservative value-learning method for the same alert-triage setting.
 
-### 6.3 IQL — gated by logged actions
-
-**Implicit Q-Learning (IQL)** is implemented but currently blocked for faithful training because the processed SOC dataset does not contain a historical behavior/agent-action column.
-
-Accepted behavior-action names are:
-
-```text
-Action
-action
-AgentAction
-agent_action
-```
-
-### 6.4 BCQ — gated by logged actions
-
-**Batch-Constrained Q-Learning (BCQ)** is likewise blocked until valid logged behavior actions are available.
-
-### 6.5 Additional RL modules
-
-The repository also contains earlier/general RL modules including DQN and PPO. The current reproducible offline-selection path is centered on Double DQN, with CQL available and IQL/BCQ gated by the data contract above.
+The README intentionally documents only **Double DQN and CQL** as the project's algorithm set.
 
 ## 7. Model selection and evaluation
 
@@ -323,13 +301,6 @@ DS-G07_MD3SI/
 │   ├── requirements.txt
 │   ├── run_all.sh
 │   ├── backend/
-│   │   ├── app/
-│   │   │   ├── data_pipeline/
-│   │   │   ├── environment/
-│   │   │   ├── reward/
-│   │   │   └── rl_agent/
-│   │   ├── models/
-│   │   └── main.py
 │   ├── frontend/
 │   ├── models/
 │   ├── data/
@@ -346,8 +317,6 @@ DS-G07_MD3SI/
 ## 11. Professor-facing one-command execution
 
 The **outer** `DS-G07_MD3SI/run_all.sh` should delegate to the tested launcher inside the repository.
-
-Use:
 
 ```bash
 #!/usr/bin/env bash
@@ -458,14 +427,14 @@ The repository also contains processed-data metadata describing the train/test t
 
 ## 16. Reproducibility and research limitations
 
-The current dataset provides alert-state information and `IncidentGrade`, but does not contain logged historical agent behavior. Therefore:
+The reproducible algorithm set documented here is limited to **Double DQN and CQL**.
 
 - Double DQN is the current selected model.
-- CQL is available as an offline-RL implementation.
-- IQL and BCQ are gated until valid behavior-action data is supplied.
+- CQL is the second implemented offline-RL algorithm.
 - The test holdout is kept separate from model selection.
+- The contextual formulation treats each alert as a one-step decision.
 
-These constraints are documented so that the experiments remain faithful to the available data rather than assuming missing behavior-policy information.
+These constraints are documented so that the experiments remain faithful to the available data.
 
 ## 17. Team structure
 
