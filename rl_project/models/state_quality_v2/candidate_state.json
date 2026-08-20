@@ -1,0 +1,51 @@
+{
+  "current_state": [
+    "Category",
+    "MitreTechniques",
+    "EntityType",
+    "EvidenceRole",
+    "ThreatFamily",
+    "OSFamily",
+    "SuspicionLevel",
+    "hour",
+    "day",
+    "month",
+    "is_weekend"
+  ],
+  "safe_candidates": [
+    "Timestamp",
+    "Category",
+    "MitreTechniques",
+    "ActionGrouped",
+    "ActionGranular",
+    "EntityType",
+    "EvidenceRole",
+    "ThreatFamily",
+    "OSFamily",
+    "SuspicionLevel",
+    "hour",
+    "day",
+    "month",
+    "is_weekend"
+  ],
+  "expanded_candidate_state": [
+    "Category",
+    "MitreTechniques",
+    "EntityType",
+    "EvidenceRole",
+    "ThreatFamily",
+    "OSFamily",
+    "SuspicionLevel",
+    "hour",
+    "day",
+    "month",
+    "is_weekend",
+    "Timestamp",
+    "ActionGranular",
+    "ActionGrouped"
+  ],
+  "forbidden": [
+    "IncidentGrade",
+    "IncidentId"
+  ]
+}

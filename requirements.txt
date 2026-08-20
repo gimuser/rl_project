@@ -1,29 +1,3 @@
-# Core API / server
-fastapi
-uvicorn[standard]
-pydantic
-pydantic-settings
-python-multipart
-
-# Data processing
-numpy
-pandas
-scikit-learn
-scipy
-
-# Reinforcement learning / ML
-torch
-gymnasium
-
-# Configuration / environment
-python-dotenv
-
-# HTTP / API utilities
-requests
-httpx
-
-# Database
-pymongo
-
-# Metrics / evaluation
-psutil
+# Submission-level requirements
+# The complete application dependencies are maintained in rl_project/requirements.txt.
+# The recommended reproduction path is Docker via ./run_all.sh.

@@ -1,0 +1,90 @@
+{
+  "name": "expanded_candidate_state",
+  "features": [
+    "Category",
+    "MitreTechniques",
+    "EntityType",
+    "EvidenceRole",
+    "ThreatFamily",
+    "OSFamily",
+    "SuspicionLevel",
+    "hour",
+    "day",
+    "month",
+    "is_weekend",
+    "Timestamp",
+    "ActionGranular",
+    "ActionGrouped"
+  ],
+  "accuracy": 0.4414505247629939,
+  "balanced_accuracy": 0.5522894657920356,
+  "macro_f1": 0.39479689936626583,
+  "true_positive_recall": 0.3457517958880357,
+  "unknown_f1": 0.3759197324414716,
+  "classification_report": {
+    "BenignPositive": {
+      "precision": 0.4750301818701076,
+      "recall": 0.6266997773591368,
+      "f1-score": 0.5404251862682115,
+      "support": 58390.0
+    },
+    "FalsePositive": {
+      "precision": 0.26729457616109126,
+      "recall": 0.2375951788098589,
+      "f1-score": 0.2515713657986741,
+      "support": 27711.0
+    },
+    "TruePositive": {
+      "precision": 0.5074283221443978,
+      "recall": 0.3457517958880357,
+      "f1-score": 0.4112713129567062,
+      "support": 60555.0
+    },
+    "Unknown": {
+      "precision": 0.23151390319258497,
+      "recall": 0.9991111111111111,
+      "f1-score": 0.3759197324414716,
+      "support": 1125.0
+    },
+    "accuracy": 0.4414505247629939,
+    "macro avg": {
+      "precision": 0.37031674584204544,
+      "recall": 0.5522894657920356,
+      "f1-score": 0.39479689936626583,
+      "support": 147781.0
+    },
+    "weighted avg": {
+      "precision": 0.4474985790320897,
+      "recall": 0.4414505247629939,
+      "f1-score": 0.43208643058943924,
+      "support": 147781.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      36593,
+      5392,
+      13898,
+      2507
+    ],
+    [
+      13733,
+      6584,
+      6426,
+      968
+    ],
+    [
+      26706,
+      12656,
+      20937,
+      256
+    ],
+    [
+      1,
+      0,
+      0,
+      1124
+    ]
+  ],
+  "incident_overlap": 40111
+}

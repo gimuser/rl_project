@@ -1,0 +1,27 @@
+{
+  "algorithms": [
+    {
+      "name": "double_dqn",
+      "status": "ready",
+      "requires_logged_actions": false
+    },
+    {
+      "name": "cql",
+      "status": "ready",
+      "requires_logged_actions": false
+    },
+    {
+      "name": "iql",
+      "status": "blocked_until_logged_actions",
+      "requires_logged_actions": true
+    },
+    {
+      "name": "bcq",
+      "status": "blocked_until_logged_actions",
+      "requires_logged_actions": true
+    }
+  ],
+  "reason": "The current Microsoft SOC processed dataset contains state features and IncidentGrade but no historical behavior/agent-action column. IQL and BCQ require the logged behavior action to be trained faithfully.",
+  "accepted_action_columns": ["Action", "action", "AgentAction", "agent_action"],
+  "selection": "Train/validation only; untouched unseen test set is used once for final evaluation."
+}

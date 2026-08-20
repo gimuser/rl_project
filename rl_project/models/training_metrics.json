@@ -1,0 +1,4145 @@
+{
+  "run_id": "94277407b6c24816afdc0d340a2fbe36",
+  "config": {
+    "algorithm": "double_dqn",
+    "display_name": "Double DQN",
+    "family": "value-based",
+    "requires_logged_actions": false,
+    "behavior_action_mode": "counterfactual_reward_matrix",
+    "research_warning": null,
+    "model_name": "double_dqn",
+    "epochs": 4000,
+    "actual_epochs": 80,
+    "batch_size": 2048,
+    "learning_rate": 0.001,
+    "gamma": 0.95,
+    "hidden_dim": 128,
+    "validation_every": 2,
+    "patience": 10,
+    "min_epochs": 20,
+    "min_delta": 0.001,
+    "chunk_size": 100000,
+    "max_total_updates": 5000000,
+    "updates_per_full_pass": 1499,
+    "dataset_rows": 3069905,
+    "features": [
+      "Category",
+      "MitreTechniques",
+      "ActionGrouped",
+      "ActionGranular",
+      "EntityType",
+      "EvidenceRole",
+      "ThreatFamily",
+      "OSFamily",
+      "SuspicionLevel",
+      "hour",
+      "day",
+      "month",
+      "is_weekend"
+    ],
+    "incident_id": "IncidentId",
+    "target": "IncidentGrade",
+    "real_data": true,
+    "synthetic_data": false,
+    "data_mode": "hard_alert_streaming",
+    "one_step_contextual": true,
+    "representative_incident_training": false,
+    "test_used_for_selection": false,
+    "threads": 4,
+    "run_id": "94277407b6c24816afdc0d340a2fbe36",
+    "selected_models": [
+      "double_dqn"
+    ],
+    "selected": true,
+    "selection_score": 0.7337569600334308,
+    "selection_rule": "validation only; final unseen TEST evaluation after champion selection",
+    "model_version": "Double DQN-20260818T230008Z-627be50fcf"
+  },
+  "metrics": [
+    {
+      "epoch": 1,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 1228,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 1.8971311239349726,
+      "average_reward": 0.5933837890625,
+      "reward_efficiency": 0.34716469075846307,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1530,
+        "block": 513,
+        "human_review": 5
+      },
+      "time_seconds": 30.25072653000825,
+      "throughput_rows_per_second": 81788.44886735767,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 0,
+      "patience_used": 0,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 2,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 2456,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.7601030338373557,
+      "average_reward": 0.722900390625,
+      "reward_efficiency": 0.42293958005999144,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 199,
+        "block": 489,
+        "human_review": 1360
+      },
+      "time_seconds": 29.79944454401266,
+      "throughput_rows_per_second": 83027.05093532059,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 458096.25,
+        "average_reward": 0.7689468648498938,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.4438085010223374,
+        "policy_optimality": 0.32095947091456917,
+        "action_distribution": {
+          "allow": 58021,
+          "block": 173024,
+          "human_review": 364700
+        },
+        "evaluation_time_seconds": 8.704677899018861,
+        "throughput_rows_per_second": 68439.63750423766,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 0.4639881576189478,
+            "optimality": 0.3093254384126319
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": -0.3682676100505664,
+            "optimality": -0.24551174003371096
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.401552216834084,
+            "optimality": 0.700776108417042
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4838490566037736,
+            "optimality": 0.9892327044025158
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.3578141799468996,
+      "best_epoch": 2,
+      "patience_used": 0,
+      "improved": true,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 3,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 3684,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.6304695196085722,
+      "average_reward": 0.7432861328125,
+      "reward_efficiency": 0.43486644765033566,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 315,
+        "block": 823,
+        "human_review": 910
+      },
+      "time_seconds": 32.268209986999864,
+      "throughput_rows_per_second": 76674.84502539135,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 2,
+      "patience_used": 0,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 4,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 4912,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.5481045734901769,
+      "average_reward": 0.9376220703125,
+      "reward_efficiency": 0.5485644907870304,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 884,
+        "block": 804,
+        "human_review": 360
+      },
+      "time_seconds": 24.686022021982353,
+      "throughput_rows_per_second": 100225.13946543577,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 543961.75,
+        "average_reward": 0.9130781626366986,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5269959072596369,
+        "policy_optimality": 0.6486936524855433,
+        "action_distribution": {
+          "allow": 211796,
+          "block": 276433,
+          "human_review": 107516
+        },
+        "evaluation_time_seconds": 8.057127981999656,
+        "throughput_rows_per_second": 73940.1187781735,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 0.9570594596139556,
+            "optimality": 0.638039639742637
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": -0.32537924816745717,
+            "optimality": -0.21691949877830477
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.3330446830620022,
+            "optimality": 0.6665223415310011
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.0262641509433963,
+            "optimality": 0.6841761006289309
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.6121843289177714,
+      "best_epoch": 4,
+      "patience_used": 0,
+      "improved": true,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 5,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 6140,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.5141250242142413,
+      "average_reward": 0.92626953125,
+      "reward_efficiency": 0.541922582488216,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 831,
+        "block": 792,
+        "human_review": 425
+      },
+      "time_seconds": 29.6712412009947,
+      "throughput_rows_per_second": 83385.79378058024,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 4,
+      "patience_used": 0,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 6,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 7368,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.483918851647975,
+      "average_reward": 0.9346923828125,
+      "reward_efficiency": 0.5468504499357235,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1025,
+        "block": 783,
+        "human_review": 240
+      },
+      "time_seconds": 34.21073181100655,
+      "throughput_rows_per_second": 72321.16558243262,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 549824.25,
+        "average_reward": 0.9229187823649381,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.532675559379128,
+        "policy_optimality": 0.7053621935559677,
+        "action_distribution": {
+          "allow": 264556,
+          "block": 268100,
+          "human_review": 63089
+        },
+        "evaluation_time_seconds": 9.730712165008299,
+        "throughput_rows_per_second": 61223.165365254834,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.1285798669994855,
+            "optimality": 0.752386577999657
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": -0.1466548743679197,
+            "optimality": -0.09776991624527981
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.1590102182196051,
+            "optimality": 0.5795051091098026
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.004,
+            "optimality": 0.6693333333333333
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.6535562033029158,
+      "best_epoch": 6,
+      "patience_used": 0,
+      "improved": true,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 7,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 8596,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.4516899740560047,
+      "average_reward": 0.98486328125,
+      "reward_efficiency": 0.5762033995143551,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1248,
+        "block": 737,
+        "human_review": 63
+      },
+      "time_seconds": 30.155258955986938,
+      "throughput_rows_per_second": 82047.38031303782,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 6,
+      "patience_used": 0,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 8,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 9824,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.4443501850972346,
+      "average_reward": 0.953125,
+      "reward_efficiency": 0.5576346236251964,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 939,
+        "block": 846,
+        "human_review": 263
+      },
+      "time_seconds": 34.1897511180141,
+      "throughput_rows_per_second": 72365.54578767903,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 566340.5,
+        "average_reward": 0.9506424728701038,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5486766773865559,
+        "policy_optimality": 0.6994838395622288,
+        "action_distribution": {
+          "allow": 237657,
+          "block": 291475,
+          "human_review": 66613
+        },
+        "evaluation_time_seconds": 7.688264401018387,
+        "throughput_rows_per_second": 77487.5796312478,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.00811960519045,
+            "optimality": 0.6720797367936332
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": -0.2273676061306887,
+            "optimality": -0.1515784040871258
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.3448468710310588,
+            "optimality": 0.6724234355155294
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 0.7828679245283019,
+            "optimality": 0.5219119496855346
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.6542416909095269,
+      "best_epoch": 6,
+      "patience_used": 1,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 9,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 11052,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.43351200754459984,
+      "average_reward": 1.017822265625,
+      "reward_efficiency": 0.5954863590915583,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1125,
+        "block": 797,
+        "human_review": 126
+      },
+      "time_seconds": 37.499365335010225,
+      "throughput_rows_per_second": 65978.71665017409,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 6,
+      "patience_used": 1,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 10,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 12280,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.4357081890494505,
+      "average_reward": 1.0238037109375,
+      "reward_efficiency": 0.5989858591629768,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1162,
+        "block": 788,
+        "human_review": 98
+      },
+      "time_seconds": 57.08321488101501,
+      "throughput_rows_per_second": 43343.038845257244,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 601066.75,
+        "average_reward": 1.0089329327145002,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5823198363485141,
+        "policy_optimality": 0.7558804522069006,
+        "action_distribution": {
+          "allow": 279431,
+          "block": 274138,
+          "human_review": 42176
+        },
+        "evaluation_time_seconds": 14.94796511399909,
+        "throughput_rows_per_second": 39854.58859828834,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.2103773270326403,
+            "optimality": 0.8069182180217602
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": -0.08147465799067069,
+            "optimality": -0.05431643866044713
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.2466227918254242,
+            "optimality": 0.6233113959127121
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4776603773584907,
+            "optimality": 0.9851069182389937
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7038122674493846,
+      "best_epoch": 10,
+      "patience_used": 0,
+      "improved": true,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 11,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 13508,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.42844165398068845,
+      "average_reward": 1.0146484375,
+      "reward_efficiency": 0.5936294815026425,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1182,
+        "block": 770,
+        "human_review": 96
+      },
+      "time_seconds": 244.2699184610101,
+      "throughput_rows_per_second": 10128.795291651602,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 10,
+      "patience_used": 0,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 12,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 14736,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.42876235395669937,
+      "average_reward": 1.000244140625,
+      "reward_efficiency": 0.5852021139837166,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1207,
+        "block": 764,
+        "human_review": 77
+      },
+      "time_seconds": 140.5388020540122,
+      "throughput_rows_per_second": 17604.81777160108,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 576875.5,
+        "average_reward": 0.9683262133966714,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5588830970162086,
+        "policy_optimality": 0.7662154109560299,
+        "action_distribution": {
+          "allow": 305266,
+          "block": 263442,
+          "human_review": 27037
+        },
+        "evaluation_time_seconds": 9.299911881011212,
+        "throughput_rows_per_second": 64059.209121798965,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.2858153426954517,
+            "optimality": 0.8572102284636345
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": -0.01959448865195406,
+            "optimality": -0.01306299243463604
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.0793247026902206,
+            "optimality": 0.5396623513451103
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.481433962264151,
+            "optimality": 0.9876226415094339
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7040157167740835,
+      "best_epoch": 10,
+      "patience_used": 1,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 13,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 15964,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.42683766100325105,
+      "average_reward": 1.0042724609375,
+      "reward_efficiency": 0.5875589201542637,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1215,
+        "block": 769,
+        "human_review": 64
+      },
+      "time_seconds": 152.625629674003,
+      "throughput_rows_per_second": 16210.6456516158,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 10,
+      "patience_used": 1,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 14,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 17192,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.4260264154317325,
+      "average_reward": 1.02734375,
+      "reward_efficiency": 0.601056991858306,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1171,
+        "block": 795,
+        "human_review": 82
+      },
+      "time_seconds": 243.44995062000817,
+      "throughput_rows_per_second": 10162.910256087185,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 602198.5,
+        "average_reward": 1.0108326549110778,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5834162877406223,
+        "policy_optimality": 0.7634810195637395,
+        "action_distribution": {
+          "allow": 282667,
+          "block": 277151,
+          "human_review": 35927
+        },
+        "evaluation_time_seconds": 15.571391108009266,
+        "throughput_rows_per_second": 38258.94525849871,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.2158138183342544,
+            "optimality": 0.8105425455561696
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": -0.0763935165222845,
+            "optimality": -0.050929011014856335
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.2446094561828889,
+            "optimality": 0.6223047280914444
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.482188679245283,
+            "optimality": 0.988125786163522
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7094616000168044,
+      "best_epoch": 14,
+      "patience_used": 0,
+      "improved": true,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 15,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 18420,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.4243795648945271,
+      "average_reward": 1.010009765625,
+      "reward_efficiency": 0.5909155834880732,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1222,
+        "block": 754,
+        "human_review": 72
+      },
+      "time_seconds": 243.02105848598876,
+      "throughput_rows_per_second": 10180.846118496544,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 14,
+      "patience_used": 0,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 16,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 19648,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.4205965251943964,
+      "average_reward": 1.0284423828125,
+      "reward_efficiency": 0.6016997571775461,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1188,
+        "block": 793,
+        "human_review": 67
+      },
+      "time_seconds": 239.64168378300383,
+      "throughput_rows_per_second": 10324.414187643408,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 600485.0,
+        "average_reward": 1.0079564243090584,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5817562307842473,
+        "policy_optimality": 0.7726980503403301,
+        "action_distribution": {
+          "allow": 292076,
+          "block": 275547,
+          "human_review": 28122
+        },
+        "evaluation_time_seconds": 15.956044436985394,
+        "throughput_rows_per_second": 37336.63454954349,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.2473788132848078,
+            "optimality": 0.8315858755232052
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": -0.05047577515581514,
+            "optimality": -0.033650516770543426
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.2048983951044914,
+            "optimality": 0.6024491975522457
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.485433962264151,
+            "optimality": 0.9902893081761006
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7154155044735052,
+      "best_epoch": 16,
+      "patience_used": 0,
+      "improved": true,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 17,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 20876,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.4234808195588643,
+      "average_reward": 1.0262451171875,
+      "reward_efficiency": 0.6004142265390658,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1187,
+        "block": 784,
+        "human_review": 77
+      },
+      "time_seconds": 234.05462149399682,
+      "throughput_rows_per_second": 10570.865826990128,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 16,
+      "patience_used": 0,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 18,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 22104,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.4174312419145814,
+      "average_reward": 1.0201416015625,
+      "reward_efficiency": 0.596843308098843,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1200,
+        "block": 776,
+        "human_review": 72
+      },
+      "time_seconds": 107.9548656209954,
+      "throughput_rows_per_second": 22918.46676634478,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 594624.5,
+        "average_reward": 0.9981191617218776,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5760785162859483,
+        "policy_optimality": 0.7702490159380272,
+        "action_distribution": {
+          "allow": 298856,
+          "block": 267446,
+          "human_review": 29443
+        },
+        "evaluation_time_seconds": 9.493132029980188,
+        "throughput_rows_per_second": 62755.36863056178,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.277139583849393,
+            "optimality": 0.8514263892329288
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": -0.02147847987142801,
+            "optimality": -0.014318986580952008
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.1505491571412076,
+            "optimality": 0.5752745785706038
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4848301886792452,
+            "optimality": 0.9898867924528302
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7119978660424034,
+      "best_epoch": 16,
+      "patience_used": 1,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 19,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 23332,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.41653402025905417,
+      "average_reward": 1.0322265625,
+      "reward_efficiency": 0.6039137266104843,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1185,
+        "block": 799,
+        "human_review": 64
+      },
+      "time_seconds": 36.64222416401026,
+      "throughput_rows_per_second": 67522.10206797716,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 16,
+      "patience_used": 1,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 20,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 24560,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.4101194816759821,
+      "average_reward": 1.0032958984375,
+      "reward_efficiency": 0.586987573203828,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1225,
+        "block": 766,
+        "human_review": 57
+      },
+      "time_seconds": 37.990918848023284,
+      "throughput_rows_per_second": 65125.03711472442,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 582392.0,
+        "average_reward": 0.9775860477217602,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5642275406694578,
+        "policy_optimality": 0.7761089056559434,
+        "action_distribution": {
+          "allow": 310236,
+          "block": 264807,
+          "human_review": 20702
+        },
+        "evaluation_time_seconds": 8.879302787972847,
+        "throughput_rows_per_second": 67093.66875144136,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3041672224233531,
+            "optimality": 0.8694448149489021
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.0004703853239778919,
+            "optimality": 0.00031359021598526124
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.0778525863064312,
+            "optimality": 0.5389262931532156
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4851320754716981,
+            "optimality": 0.9900880503144655
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7125444961599977,
+      "best_epoch": 16,
+      "patience_used": 2,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 21,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 25788,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.40485764309424144,
+      "average_reward": 1.04150390625,
+      "reward_efficiency": 0.6093415226396229,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1211,
+        "block": 758,
+        "human_review": 79
+      },
+      "time_seconds": 36.19488991101389,
+      "throughput_rows_per_second": 68356.61072827653,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 16,
+      "patience_used": 2,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 22,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 27016,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.40362140698910537,
+      "average_reward": 1.0277099609375,
+      "reward_efficiency": 0.6012712469647193,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1175,
+        "block": 805,
+        "human_review": 68
+      },
+      "time_seconds": 36.170956020010635,
+      "throughput_rows_per_second": 68401.84148384786,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 602635.0,
+        "average_reward": 1.0115653509471334,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5838391735658092,
+        "policy_optimality": 0.77376226405593,
+        "action_distribution": {
+          "allow": 286944,
+          "block": 281296,
+          "human_review": 27505
+        },
+        "evaluation_time_seconds": 8.578761051991023,
+        "throughput_rows_per_second": 69444.17689099,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.2216254453992874,
+            "optimality": 0.8144169635995249
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": -0.06177727254909647,
+            "optimality": -0.041184848366064314
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.2362963283685486,
+            "optimality": 0.6181481641842743
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4865660377358492,
+            "optimality": 0.9910440251572327
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7167853369088937,
+      "best_epoch": 22,
+      "patience_used": 0,
+      "improved": true,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 23,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 28244,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.4017214708588411,
+      "average_reward": 1.0389404296875,
+      "reward_efficiency": 0.6078417368947293,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1251,
+        "block": 712,
+        "human_review": 85
+      },
+      "time_seconds": 38.545880047022365,
+      "throughput_rows_per_second": 64187.40464562637,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 22,
+      "patience_used": 0,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 24,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 29472,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3974000131074303,
+      "average_reward": 1.0316162109375,
+      "reward_efficiency": 0.6035566347664619,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1216,
+        "block": 766,
+        "human_review": 66
+      },
+      "time_seconds": 37.3776757089945,
+      "throughput_rows_per_second": 66193.52201733139,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 604838.5,
+        "average_reward": 1.015264081108528,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5859739477142609,
+        "policy_optimality": 0.7711067654785185,
+        "action_distribution": {
+          "allow": 302860,
+          "block": 259185,
+          "human_review": 33700
+        },
+        "evaluation_time_seconds": 8.686441414989531,
+        "throughput_rows_per_second": 68583.3210101398,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.2943958289666737,
+            "optimality": 0.8629305526444491
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.09448620203049665,
+            "optimality": 0.06299080135366443
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.1315920505715276,
+            "optimality": 0.5657960252857638
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4866415094339622,
+            "optimality": 0.9910943396226415
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7155669201492412,
+      "best_epoch": 22,
+      "patience_used": 1,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 25,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 30700,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.39886349519708647,
+      "average_reward": 1.0537109375,
+      "reward_efficiency": 0.6164833595200686,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1215,
+        "block": 748,
+        "human_review": 85
+      },
+      "time_seconds": 58.928477183013456,
+      "throughput_rows_per_second": 41985.81260323479,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 22,
+      "patience_used": 1,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 26,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 31928,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3976641175752742,
+      "average_reward": 1.031982421875,
+      "reward_efficiency": 0.6037708898728753,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1279,
+        "block": 690,
+        "human_review": 79
+      },
+      "time_seconds": 57.73328859699541,
+      "throughput_rows_per_second": 42854.99856539892,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 589173.25,
+        "average_reward": 0.9889688541238282,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5707972875240931,
+        "policy_optimality": 0.7652166614910741,
+        "action_distribution": {
+          "allow": 337767,
+          "block": 220565,
+          "human_review": 37413
+        },
+        "evaluation_time_seconds": 9.570304110995494,
+        "throughput_rows_per_second": 62249.32803499294,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3552273679998477,
+            "optimality": 0.9034849119998983
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.5251509152914429,
+            "optimality": 0.3501006101942953
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.870370771273525,
+            "optimality": 0.4351853856367625
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4890566037735848,
+            "optimality": 0.9927044025157232
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7068908493009798,
+      "best_epoch": 22,
+      "patience_used": 2,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 27,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 33156,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3929638497604221,
+      "average_reward": 1.0400390625,
+      "reward_efficiency": 0.6084845022139694,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1223,
+        "block": 744,
+        "human_review": 81
+      },
+      "time_seconds": 45.48711952698068,
+      "throughput_rows_per_second": 54392.540695667754,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 22,
+      "patience_used": 2,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 28,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 34384,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3939131522848474,
+      "average_reward": 1.0390625,
+      "reward_efficiency": 0.6079131552635337,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1258,
+        "block": 713,
+        "human_review": 77
+      },
+      "time_seconds": 41.83672050200403,
+      "throughput_rows_per_second": 59138.47859756323,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 598958.75,
+        "average_reward": 1.0053945060386575,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5802775836119874,
+        "policy_optimality": 0.7691176594012539,
+        "action_distribution": {
+          "allow": 329073,
+          "block": 230514,
+          "human_review": 36158
+        },
+        "evaluation_time_seconds": 8.484181009000167,
+        "throughput_rows_per_second": 70218.32742229608,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.313777843409996,
+            "optimality": 0.875851895606664
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.5078765042530673,
+            "optimality": 0.33858433616871153
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.9435508313127814,
+            "optimality": 0.4717754156563907
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4841509433962263,
+            "optimality": 0.9894339622641509
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7124656366644739,
+      "best_epoch": 22,
+      "patience_used": 3,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 29,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 35612,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.39130802350634475,
+      "average_reward": 1.0408935546875,
+      "reward_efficiency": 0.6089844307956006,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1263,
+        "block": 719,
+        "human_review": 66
+      },
+      "time_seconds": 52.19180659900303,
+      "throughput_rows_per_second": 47405.1419413265,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 22,
+      "patience_used": 3,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 30,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 36840,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3902346289410265,
+      "average_reward": 1.025634765625,
+      "reward_efficiency": 0.6000571346950435,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1267,
+        "block": 701,
+        "human_review": 80
+      },
+      "time_seconds": 39.73128318000818,
+      "throughput_rows_per_second": 62272.34063371348,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 584882.75,
+        "average_reward": 0.9817669472677069,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5666406056616322,
+        "policy_optimality": 0.7673283032169804,
+        "action_distribution": {
+          "allow": 331844,
+          "block": 229824,
+          "human_review": 34077
+        },
+        "evaluation_time_seconds": 9.110966552019818,
+        "throughput_rows_per_second": 65387.68379826055,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.35192855509613,
+            "optimality": 0.90128570339742
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.40456077770373566,
+            "optimality": 0.26970718513582376
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.9015738656044336,
+            "optimality": 0.4507869328022168
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4980377358490566,
+            "optimality": 0.9986918238993711
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7071219939503759,
+      "best_epoch": 22,
+      "patience_used": 4,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 31,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 38068,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.39113211282301413,
+      "average_reward": 1.052001953125,
+      "reward_efficiency": 0.6154835023568062,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1232,
+        "block": 735,
+        "human_review": 81
+      },
+      "time_seconds": 38.29833783901995,
+      "throughput_rows_per_second": 64602.281446251756,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 22,
+      "patience_used": 4,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 32,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 39296,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3897056144932194,
+      "average_reward": 1.0455322265625,
+      "reward_efficiency": 0.61169832881017,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1218,
+        "block": 736,
+        "human_review": 94
+      },
+      "time_seconds": 31.484638376015937,
+      "throughput_rows_per_second": 78583.08456497127,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 607912.75,
+        "average_reward": 1.0204244265583429,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5889523136892453,
+        "policy_optimality": 0.7723472290996987,
+        "action_distribution": {
+          "allow": 311808,
+          "block": 248333,
+          "human_review": 35604
+        },
+        "evaluation_time_seconds": 8.426409959007287,
+        "throughput_rows_per_second": 70699.74080280619,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.2911922886377927,
+            "optimality": 0.8607948590918618
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.3183773666261613,
+            "optimality": 0.2122515777507742
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.0623917561482508,
+            "optimality": 0.5311958780741254
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.498566037735849,
+            "optimality": 0.9990440251572327
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7173287544765626,
+      "best_epoch": 22,
+      "patience_used": 5,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 33,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 40524,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3886183695412614,
+      "average_reward": 1.0316162109375,
+      "reward_efficiency": 0.6035566347664619,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1287,
+        "block": 692,
+        "human_review": 69
+      },
+      "time_seconds": 45.782296535006026,
+      "throughput_rows_per_second": 54041.849956308106,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 22,
+      "patience_used": 5,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 34,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 41752,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.38753931428205696,
+      "average_reward": 1.0499267578125,
+      "reward_efficiency": 0.6142693900871304,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1264,
+        "block": 710,
+        "human_review": 74
+      },
+      "time_seconds": 61.14873856000486,
+      "throughput_rows_per_second": 40461.341611685464,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 588231.5,
+        "average_reward": 0.9873880603278248,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5698849101452392,
+        "policy_optimality": 0.7726728717823901,
+        "action_distribution": {
+          "allow": 334890,
+          "block": 231271,
+          "human_review": 29584
+        },
+        "evaluation_time_seconds": 12.131162091012811,
+        "throughput_rows_per_second": 49108.65055882393,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.307823307482708,
+            "optimality": 0.871882204988472
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.5376063266826075,
+            "optimality": 0.358404217788405
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.8980595485509756,
+            "optimality": 0.4490297742754878
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4987924528301886,
+            "optimality": 0.9991949685534591
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7118364832912448,
+      "best_epoch": 22,
+      "patience_used": 6,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 35,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 42980,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3872796212374582,
+      "average_reward": 1.0093994140625,
+      "reward_efficiency": 0.5905584916440508,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1309,
+        "block": 652,
+        "human_review": 87
+      },
+      "time_seconds": 78.057454572001,
+      "throughput_rows_per_second": 31696.652338538777,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 22,
+      "patience_used": 6,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 36,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 44208,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3867095643320767,
+      "average_reward": 1.024658203125,
+      "reward_efficiency": 0.5994857877446079,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1286,
+        "block": 673,
+        "human_review": 89
+      },
+      "time_seconds": 70.7374796810036,
+      "throughput_rows_per_second": 34976.64902902146,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 568599.0,
+        "average_reward": 0.9544335244106119,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5508647361177919,
+        "policy_optimality": 0.7630932697714626,
+        "action_distribution": {
+          "allow": 347805,
+          "block": 215674,
+          "human_review": 32266
+        },
+        "evaluation_time_seconds": 9.105810197012033,
+        "throughput_rows_per_second": 65424.71093846068,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3452237476420037,
+            "optimality": 0.8968158317613358
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.5978768962408373,
+            "optimality": 0.3985845974938915
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.7767254069968825,
+            "optimality": 0.38836270349844126
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4978867924528303,
+            "optimality": 0.9985911949685534
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.6994247096753613,
+      "best_epoch": 22,
+      "patience_used": 7,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 37,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 45436,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3853529675921322,
+      "average_reward": 1.0306396484375,
+      "reward_efficiency": 0.6029852878160262,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1297,
+        "block": 682,
+        "human_review": 69
+      },
+      "time_seconds": 45.93829158198787,
+      "throughput_rows_per_second": 53858.33723451099,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 22,
+      "patience_used": 7,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 38,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 46664,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3855328477360915,
+      "average_reward": 1.0377197265625,
+      "reward_efficiency": 0.6071275532066848,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1278,
+        "block": 693,
+        "human_review": 77
+      },
+      "time_seconds": 36.47011440899223,
+      "throughput_rows_per_second": 67840.75235557693,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 591813.25,
+        "average_reward": 0.9934002803212784,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5733549474977317,
+        "policy_optimality": 0.7737824069022821,
+        "action_distribution": {
+          "allow": 338782,
+          "block": 226204,
+          "human_review": 30759
+        },
+        "evaluation_time_seconds": 8.97325984298368,
+        "throughput_rows_per_second": 66391.14551729175,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.343741068196109,
+            "optimality": 0.895827378797406
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.5324639371251617,
+            "optimality": 0.3549759580834411
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.8857161413231729,
+            "optimality": 0.44285807066158644
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4969056603773585,
+            "optimality": 0.997937106918239
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.713654169080917,
+      "best_epoch": 22,
+      "patience_used": 8,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 39,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 47892,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3864398283902131,
+      "average_reward": 1.0445556640625,
+      "reward_efficiency": 0.6111269818597344,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1267,
+        "block": 702,
+        "human_review": 79
+      },
+      "time_seconds": 38.02636006899411,
+      "throughput_rows_per_second": 65064.33946112497,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 22,
+      "patience_used": 8,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 40,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 49120,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.384902921386961,
+      "average_reward": 1.0528564453125,
+      "reward_efficiency": 0.6159834309384373,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1215,
+        "block": 750,
+        "human_review": 83
+      },
+      "time_seconds": 64.0245602009818,
+      "throughput_rows_per_second": 38643.92027423969,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 607714.75,
+        "average_reward": 1.020092069593534,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5887604891912224,
+        "policy_optimality": 0.7763825126522254,
+        "action_distribution": {
+          "allow": 307192,
+          "block": 257764,
+          "human_review": 30789
+        },
+        "evaluation_time_seconds": 9.594503526983317,
+        "throughput_rows_per_second": 62092.32174698182,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.2768001753015377,
+            "optimality": 0.8512001168676918
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.22513082591823136,
+            "optimality": 0.1500872172788209
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.106926884886272,
+            "optimality": 0.553463442443136
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4978867924528303,
+            "optimality": 0.9985911949685534
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7200959056139244,
+      "best_epoch": 40,
+      "patience_used": 0,
+      "improved": true,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 41,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 50348,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3855843741798634,
+      "average_reward": 1.0531005859375,
+      "reward_efficiency": 0.6161262676760463,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1263,
+        "block": 710,
+        "human_review": 75
+      },
+      "time_seconds": 40.735027456015814,
+      "throughput_rows_per_second": 60737.899407862365,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 40,
+      "patience_used": 0,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 42,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 51576,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.38304700064154323,
+      "average_reward": 1.0262451171875,
+      "reward_efficiency": 0.6004142265390658,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1284,
+        "block": 696,
+        "human_review": 68
+      },
+      "time_seconds": 132.3270030139829,
+      "throughput_rows_per_second": 18697.317581798154,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 575469.75,
+        "average_reward": 0.9659665628750556,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.557521191520776,
+        "policy_optimality": 0.7720702649623581,
+        "action_distribution": {
+          "allow": 344321,
+          "block": 226273,
+          "human_review": 25151
+        },
+        "evaluation_time_seconds": 14.4537689750141,
+        "throughput_rows_per_second": 41217.27703202194,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.316070339742002,
+            "optimality": 0.877380226494668
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.5867713927325467,
+            "optimality": 0.3911809284883645
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.8276902205288073,
+            "optimality": 0.4138451102644036
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4977358490566037,
+            "optimality": 0.9984905660377359
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7077055429298834,
+      "best_epoch": 40,
+      "patience_used": 1,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 43,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 52804,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.38233430923875844,
+      "average_reward": 1.0626220703125,
+      "reward_efficiency": 0.6216969004427939,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1259,
+        "block": 732,
+        "human_review": 57
+      },
+      "time_seconds": 51.27408518199809,
+      "throughput_rows_per_second": 48253.61566604132,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 40,
+      "patience_used": 1,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 44,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 54032,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3835164819895639,
+      "average_reward": 1.0462646484375,
+      "reward_efficiency": 0.6121268390229967,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1271,
+        "block": 714,
+        "human_review": 63
+      },
+      "time_seconds": 45.53307676798431,
+      "throughput_rows_per_second": 54337.64146023308,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 606468.5,
+        "average_reward": 1.0180001510713477,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5875531089858635,
+        "policy_optimality": 0.774499156518309,
+        "action_distribution": {
+          "allow": 328894,
+          "block": 232481,
+          "human_review": 34370
+        },
+        "evaluation_time_seconds": 9.209554283996113,
+        "throughput_rows_per_second": 64687.71252429174,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3318796326289515,
+            "optimality": 0.8879197550859677
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.47133099447297244,
+            "optimality": 0.31422066298198165
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.9700381018358157,
+            "optimality": 0.48501905091790787
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4989433962264151,
+            "optimality": 0.9992955974842768
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7184153422585754,
+      "best_epoch": 40,
+      "patience_used": 2,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 45,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 55260,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.38291363539447226,
+      "average_reward": 1.0084228515625,
+      "reward_efficiency": 0.5899871446936152,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1319,
+        "block": 646,
+        "human_review": 83
+      },
+      "time_seconds": 39.00928518301225,
+      "throughput_rows_per_second": 63424.89969740451,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 40,
+      "patience_used": 2,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 46,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 56488,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3838148463141258,
+      "average_reward": 1.066650390625,
+      "reward_efficiency": 0.6240537066133409,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1258,
+        "block": 724,
+        "human_review": 66
+      },
+      "time_seconds": 37.202610911015654,
+      "throughput_rows_per_second": 66505.00971337482,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 609690.0,
+        "average_reward": 1.0234076660316074,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.59067413232112,
+        "policy_optimality": 0.7766510839369193,
+        "action_distribution": {
+          "allow": 323926,
+          "block": 238953,
+          "human_review": 32866
+        },
+        "evaluation_time_seconds": 10.008967905974714,
+        "throughput_rows_per_second": 59521.122017423826,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3023927707170213,
+            "optimality": 0.8682618471446809
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.4665634432205715,
+            "optimality": 0.31104229548038104
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.0057874379401917,
+            "optimality": 0.5028937189700958
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.497433962264151,
+            "optimality": 0.9982893081761006
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7208579984521795,
+      "best_epoch": 40,
+      "patience_used": 3,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 47,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 57716,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3824989060091662,
+      "average_reward": 1.0650634765625,
+      "reward_efficiency": 0.623125267818883,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1272,
+        "block": 690,
+        "human_review": 86
+      },
+      "time_seconds": 45.39258618600434,
+      "throughput_rows_per_second": 54505.81709228202,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 40,
+      "patience_used": 3,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 48,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 58944,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.38223940255393424,
+      "average_reward": 1.048583984375,
+      "reward_efficiency": 0.6134837880302814,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1290,
+        "block": 694,
+        "human_review": 64
+      },
+      "time_seconds": 48.98206696700072,
+      "throughput_rows_per_second": 50511.5474540273,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 584362.25,
+        "average_reward": 0.9808932513071869,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5661363397463751,
+        "policy_optimality": 0.7728625502522052,
+        "action_distribution": {
+          "allow": 340771,
+          "block": 227393,
+          "human_review": 27581
+        },
+        "evaluation_time_seconds": 9.998595509998268,
+        "throughput_rows_per_second": 59582.86835428781,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3143197061793792,
+            "optimality": 0.8762131374529195
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.5817931480537807,
+            "optimality": 0.3878620987025205
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.863060703152061,
+            "optimality": 0.4315303515760305
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4924528301886792,
+            "optimality": 0.9949685534591195
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7108446871004561,
+      "best_epoch": 40,
+      "patience_used": 4,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 49,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 60172,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3813123922879999,
+      "average_reward": 1.0216064453125,
+      "reward_efficiency": 0.5977003285244965,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1278,
+        "block": 686,
+        "human_review": 84
+      },
+      "time_seconds": 52.16247232598835,
+      "throughput_rows_per_second": 47431.80086514661,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 40,
+      "patience_used": 4,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 50,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 61400,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3806903172976031,
+      "average_reward": 1.0648193359375,
+      "reward_efficiency": 0.6229824310812742,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1233,
+        "block": 738,
+        "human_review": 77
+      },
+      "time_seconds": 49.07275607899646,
+      "throughput_rows_per_second": 50418.19937761679,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 608431.5,
+        "average_reward": 1.0212951850204366,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5894548841859594,
+        "policy_optimality": 0.7774484049383545,
+        "action_distribution": {
+          "allow": 317279,
+          "block": 248496,
+          "human_review": 29970
+        },
+        "evaluation_time_seconds": 12.021335577010177,
+        "throughput_rows_per_second": 49557.30552429746,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.260079838417713,
+            "optimality": 0.8400532256118087
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.4319509231311983,
+            "optimality": 0.2879672820874655
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.0463247604202748,
+            "optimality": 0.5231623802101374
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.485509433962264,
+            "optimality": 0.9903396226415094
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.721050348712636,
+      "best_epoch": 40,
+      "patience_used": 5,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 51,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 62628,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.38012285843637167,
+      "average_reward": 1.0748291015625,
+      "reward_efficiency": 0.6288387373232396,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1295,
+        "block": 696,
+        "human_review": 57
+      },
+      "time_seconds": 59.420860158017604,
+      "throughput_rows_per_second": 41637.902807540624,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 40,
+      "patience_used": 5,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 52,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 63856,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3806398412643504,
+      "average_reward": 1.0673828125,
+      "reward_efficiency": 0.6244822168261677,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1289,
+        "block": 699,
+        "human_review": 60
+      },
+      "time_seconds": 39.70451885697548,
+      "throughput_rows_per_second": 62314.31764511428,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 590217.25,
+        "average_reward": 0.9907212817564562,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5718087257863956,
+        "policy_optimality": 0.7808575816834383,
+        "action_distribution": {
+          "allow": 339701,
+          "block": 232252,
+          "human_review": 23792
+        },
+        "evaluation_time_seconds": 7.670750983001199,
+        "throughput_rows_per_second": 77664.49482198071,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3298967721651644,
+            "optimality": 0.8865978481101097
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.535127004037474,
+            "optimality": 0.3567513360249827
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.8894180810529961,
+            "optimality": 0.44470904052649807
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4987924528301886,
+            "optimality": 0.9991949685534591
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7181429249143255,
+      "best_epoch": 40,
+      "patience_used": 6,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 53,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 65084,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.37849095672466077,
+      "average_reward": 1.0767822265625,
+      "reward_efficiency": 0.6299814312241109,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1279,
+        "block": 700,
+        "human_review": 69
+      },
+      "time_seconds": 36.17352149801445,
+      "throughput_rows_per_second": 68396.9903271874,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 40,
+      "patience_used": 6,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 54,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 66312,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3776465747323409,
+      "average_reward": 1.0557861328125,
+      "reward_efficiency": 0.6176974717897443,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1281,
+        "block": 693,
+        "human_review": 74
+      },
+      "time_seconds": 27.513965057994938,
+      "throughput_rows_per_second": 89923.7894205679,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 587019.75,
+        "average_reward": 0.9853540524889004,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.568710953905445,
+        "policy_optimality": 0.7707106228335949,
+        "action_distribution": {
+          "allow": 336289,
+          "block": 228777,
+          "human_review": 30679
+        },
+        "evaluation_time_seconds": 8.036102427024161,
+        "throughput_rows_per_second": 74133.57475342802,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3047388578723729,
+            "optimality": 0.8698259052482485
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.5659445925287131,
+            "optimality": 0.3772963950191421
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.8856620193972983,
+            "optimality": 0.44283100969864914
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4957735849056604,
+            "optimality": 0.997182389937107
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7101107221551499,
+      "best_epoch": 40,
+      "patience_used": 7,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 55,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 67540,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.37990808952903127,
+      "average_reward": 1.083740234375,
+      "reward_efficiency": 0.6340522782459649,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1245,
+        "block": 734,
+        "human_review": 69
+      },
+      "time_seconds": 42.435001682984876,
+      "throughput_rows_per_second": 58304.69899550073,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 40,
+      "patience_used": 7,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 56,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 68768,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.38025967521950943,
+      "average_reward": 1.0440673828125,
+      "reward_efficiency": 0.6108413083845164,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1280,
+        "block": 687,
+        "human_review": 81
+      },
+      "time_seconds": 42.615901620010845,
+      "throughput_rows_per_second": 58057.20179432333,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 574723.5,
+        "average_reward": 0.9647139296175377,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5567982166134547,
+        "policy_optimality": 0.7656178398475858,
+        "action_distribution": {
+          "allow": 337248,
+          "block": 228461,
+          "human_review": 30036
+        },
+        "evaluation_time_seconds": 10.521125658007804,
+        "throughput_rows_per_second": 56623.694019524286,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.2817245765134049,
+            "optimality": 0.8544830510089366
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.5834027478342676,
+            "optimality": 0.38893516522284505
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.8522832236462302,
+            "optimality": 0.4261416118231151
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4964528301886793,
+            "optimality": 0.9976352201257862
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7029719528773465,
+      "best_epoch": 40,
+      "patience_used": 8,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 57,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 69996,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3795923281958515,
+      "average_reward": 1.0718994140625,
+      "reward_efficiency": 0.6271246964719326,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1284,
+        "block": 706,
+        "human_review": 58
+      },
+      "time_seconds": 50.02382355599548,
+      "throughput_rows_per_second": 49459.633912839236,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 40,
+      "patience_used": 8,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 58,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 71224,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.377491704585692,
+      "average_reward": 1.02294921875,
+      "reward_efficiency": 0.5984859305813455,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1331,
+        "block": 658,
+        "human_review": 59
+      },
+      "time_seconds": 44.56828184099868,
+      "throughput_rows_per_second": 55513.91926722207,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 557457.5,
+        "average_reward": 0.9357317308580013,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5400707328616194,
+        "policy_optimality": 0.7733073714424796,
+        "action_distribution": {
+          "allow": 362870,
+          "block": 212298,
+          "human_review": 20577
+        },
+        "evaluation_time_seconds": 7.663547352014575,
+        "throughput_rows_per_second": 77737.49839796996,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3850417293877784,
+            "optimality": 0.9233611529251856
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.635274979420642,
+            "optimality": 0.42351665294709473
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.6926451910864796,
+            "optimality": 0.3463225955432398
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4958490566037737,
+            "optimality": 0.9972327044025158
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7033363798682215,
+      "best_epoch": 40,
+      "patience_used": 9,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 59,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 72452,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.37690356058290025,
+      "average_reward": 1.0177001953125,
+      "reward_efficiency": 0.5954149407227539,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1346,
+        "block": 656,
+        "human_review": 46
+      },
+      "time_seconds": 34.377742864977336,
+      "throughput_rows_per_second": 71969.82098904972,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 40,
+      "patience_used": 9,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 60,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 73680,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3761400685490925,
+      "average_reward": 1.0855712890625,
+      "reward_efficiency": 0.6351235537780318,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1258,
+        "block": 729,
+        "human_review": 61
+      },
+      "time_seconds": 50.651713326980826,
+      "throughput_rows_per_second": 48846.52142027505,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 620669.5,
+        "average_reward": 1.0418375311584656,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.6013111882607283,
+        "policy_optimality": 0.7905194336503034,
+        "action_distribution": {
+          "allow": 319049,
+          "block": 252639,
+          "human_review": 24057
+        },
+        "evaluation_time_seconds": 10.236095138010569,
+        "throughput_rows_per_second": 58200.4164642598,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.2972480516758447,
+            "optimality": 0.8648320344505631
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.38764160558190586,
+            "optimality": 0.2584277370546039
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.0783396836393027,
+            "optimality": 0.5391698418196513
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.498188679245283,
+            "optimality": 0.9987924528301887
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7337569600334308,
+      "best_epoch": 60,
+      "patience_used": 0,
+      "improved": true,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 61,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 74908,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.37632562875359377,
+      "average_reward": 1.0738525390625,
+      "reward_efficiency": 0.6282673903728039,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1298,
+        "block": 701,
+        "human_review": 49
+      },
+      "time_seconds": 48.24183643399738,
+      "throughput_rows_per_second": 51286.60479965456,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 60,
+      "patience_used": 0,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 62,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 76136,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.37909183990974765,
+      "average_reward": 1.0762939453125,
+      "reward_efficiency": 0.629695757748893,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1273,
+        "block": 714,
+        "human_review": 61
+      },
+      "time_seconds": 54.032906559004914,
+      "throughput_rows_per_second": 45789.87431109545,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 600827.0,
+        "average_reward": 1.0085304954300918,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.582087564008105,
+        "policy_optimality": 0.7899957196451501,
+        "action_distribution": {
+          "allow": 336054,
+          "block": 241142,
+          "human_review": 18549
+        },
+        "evaluation_time_seconds": 9.95081761397887,
+        "throughput_rows_per_second": 59868.949779875344,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3132538442483948,
+            "optimality": 0.8755025628322631
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.5202510681666732,
+            "optimality": 0.3468340454444488
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.9458600334834315,
+            "optimality": 0.47293001674171575
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4955471698113207,
+            "optimality": 0.9970314465408805
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7276232729540366,
+      "best_epoch": 60,
+      "patience_used": 1,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 63,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 77364,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.37820187968229235,
+      "average_reward": 1.081298828125,
+      "reward_efficiency": 0.6326239108698757,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1223,
+        "block": 747,
+        "human_review": 78
+      },
+      "time_seconds": 51.163513662002515,
+      "throughput_rows_per_second": 48357.898488849845,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 60,
+      "patience_used": 1,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 64,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 78592,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.37708075303305244,
+      "average_reward": 1.07177734375,
+      "reward_efficiency": 0.6270532781031282,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1294,
+        "block": 701,
+        "human_review": 53
+      },
+      "time_seconds": 21.55360244199983,
+      "throughput_rows_per_second": 114791.01958282375,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 593949.5,
+        "average_reward": 0.996986126614575,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5754245691335975,
+        "policy_optimality": 0.7846209368102124,
+        "action_distribution": {
+          "allow": 340962,
+          "block": 233221,
+          "human_review": 21562
+        },
+        "evaluation_time_seconds": 7.886933414993109,
+        "throughput_rows_per_second": 75535.69539049044,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3259608239172271,
+            "optimality": 0.8839738826114848
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.5640704010034887,
+            "optimality": 0.3760469340023258
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.8952091271215795,
+            "optimality": 0.44760456356078976
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4987924528301886,
+            "optimality": 0.9991949685534591
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7218620265072279,
+      "best_epoch": 60,
+      "patience_used": 2,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 65,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 79820,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.37673500085595374,
+      "average_reward": 1.07763671875,
+      "reward_efficiency": 0.630481359805742,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1276,
+        "block": 714,
+        "human_review": 58
+      },
+      "time_seconds": 20.1059715890151,
+      "throughput_rows_per_second": 123055.97812302479,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 60,
+      "patience_used": 2,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 66,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 81048,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.37627123820471065,
+      "average_reward": 1.0767822265625,
+      "reward_efficiency": 0.6299814312241109,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1295,
+        "block": 713,
+        "human_review": 40
+      },
+      "time_seconds": 23.042919337021885,
+      "throughput_rows_per_second": 107371.81187042099,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 612921.5,
+        "average_reward": 1.0288319666971606,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5938048437623372,
+        "policy_optimality": 0.7893091842986513,
+        "action_distribution": {
+          "allow": 329267,
+          "block": 242984,
+          "human_review": 23494
+        },
+        "evaluation_time_seconds": 8.053393066016724,
+        "throughput_rows_per_second": 73974.40993087656,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3312246336769498,
+            "optimality": 0.8874830891179665
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.43815412959115674,
+            "optimality": 0.29210275306077116
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.0060400069276065,
+            "optimality": 0.5030200034638033
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4986415094339622,
+            "optimality": 0.9990943396226415
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.730657882137757,
+      "best_epoch": 60,
+      "patience_used": 3,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 67,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 82276,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3766322687802175,
+      "average_reward": 1.0682373046875,
+      "reward_efficiency": 0.6249821454077988,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1275,
+        "block": 721,
+        "human_review": 52
+      },
+      "time_seconds": 26.23538185301004,
+      "throughput_rows_per_second": 94306.2317088453,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 60,
+      "patience_used": 3,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 68,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 83504,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.37637327596884984,
+      "average_reward": 1.08251953125,
+      "reward_efficiency": 0.6333380945579203,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1242,
+        "block": 738,
+        "human_review": 68
+      },
+      "time_seconds": 23.80234449999989,
+      "throughput_rows_per_second": 103946.06296031097,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 619425.75,
+        "average_reward": 1.0397498090626023,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.6001062300818597,
+        "policy_optimality": 0.7884799704571587,
+        "action_distribution": {
+          "allow": 314533,
+          "block": 256194,
+          "human_review": 25018
+        },
+        "evaluation_time_seconds": 7.491668660019059,
+        "throughput_rows_per_second": 79521.00220066118,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.282969074522208,
+            "optimality": 0.8553127163481387
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.3498858335619929,
+            "optimality": 0.2332572223746619
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.098570459531232,
+            "optimality": 0.549285229765616
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4981132075471697,
+            "optimality": 0.9987421383647799
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.731967848344569,
+      "best_epoch": 60,
+      "patience_used": 4,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 69,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 84732,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.37527669065841246,
+      "average_reward": 1.0838623046875,
+      "reward_efficiency": 0.6341236966147693,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1261,
+        "block": 734,
+        "human_review": 53
+      },
+      "time_seconds": 23.84758797098766,
+      "throughput_rows_per_second": 103748.85724334038,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 60,
+      "patience_used": 4,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 70,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 85960,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3784751885294526,
+      "average_reward": 1.029541015625,
+      "reward_efficiency": 0.6023425224967862,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1295,
+        "block": 679,
+        "human_review": 74
+      },
+      "time_seconds": 23.122952639008872,
+      "throughput_rows_per_second": 107000.1759129171,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 575545.5,
+        "average_reward": 0.9660937145926529,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5575945789234286,
+        "policy_optimality": 0.776221369881409,
+        "action_distribution": {
+          "allow": 350589,
+          "block": 222086,
+          "human_review": 23070
+        },
+        "evaluation_time_seconds": 7.561590632016305,
+        "throughput_rows_per_second": 78785.6720883003,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3486892875516854,
+            "optimality": 0.8991261917011236
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.6060547410920779,
+            "optimality": 0.4040364940613853
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.7965340318669899,
+            "optimality": 0.39826701593349495
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4819622641509433,
+            "optimality": 0.9879748427672956
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7106333325940148,
+      "best_epoch": 60,
+      "patience_used": 5,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 71,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 87188,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3780123522741787,
+      "average_reward": 1.037353515625,
+      "reward_efficiency": 0.6069132981002714,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1322,
+        "block": 677,
+        "human_review": 49
+      },
+      "time_seconds": 24.035034058993915,
+      "throughput_rows_per_second": 102939.73347103158,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 60,
+      "patience_used": 5,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 72,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 88416,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3761289035992436,
+      "average_reward": 1.0736083984375,
+      "reward_efficiency": 0.6281245536351949,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1276,
+        "block": 712,
+        "human_review": 60
+      },
+      "time_seconds": 22.502222201001132,
+      "throughput_rows_per_second": 109951.80733260752,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 604958.75,
+        "average_reward": 1.0154659292146808,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.586090447188439,
+        "policy_optimality": 0.7880787921006471,
+        "action_distribution": {
+          "allow": 333732,
+          "block": 240356,
+          "human_review": 21657
+        },
+        "evaluation_time_seconds": 7.824772063991986,
+        "throughput_rows_per_second": 76135.76409995349,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3211674224957604,
+            "optimality": 0.8807782816638402
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.49467386617537534,
+            "optimality": 0.3297825774502502
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.9643444752338067,
+            "optimality": 0.48217223761690337
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4891320754716981,
+            "optimality": 0.992754716981132
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7274822886269847,
+      "best_epoch": 60,
+      "patience_used": 6,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 73,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 89644,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3766324007064589,
+      "average_reward": 1.0389404296875,
+      "reward_efficiency": 0.6078417368947293,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1331,
+        "block": 645,
+        "human_review": 72
+      },
+      "time_seconds": 22.943225933006033,
+      "throughput_rows_per_second": 107838.36620118373,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 60,
+      "patience_used": 6,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 74,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 90872,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.38635808743949046,
+      "average_reward": 1.0333251953125,
+      "reward_efficiency": 0.6045564919297243,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1310,
+        "block": 677,
+        "human_review": 61
+      },
+      "time_seconds": 24.56049497501226,
+      "throughput_rows_per_second": 100737.38344920163,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 563459.75,
+        "average_reward": 0.9458069308177156,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5458857762619121,
+        "policy_optimality": 0.7711185154722239,
+        "action_distribution": {
+          "allow": 348611,
+          "block": 225025,
+          "human_review": 22109
+        },
+        "evaluation_time_seconds": 7.587444966018666,
+        "throughput_rows_per_second": 78517.20871362093,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.313259798784322,
+            "optimality": 0.8755065325228812
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.6039649562933637,
+            "optimality": 0.40264330419557576
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.7801928183812493,
+            "optimality": 0.39009640919062466
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4961509433962263,
+            "optimality": 0.9974339622641509
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7035486937091303,
+      "best_epoch": 60,
+      "patience_used": 7,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 75,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 92100,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.37922700994469055,
+      "average_reward": 1.0777587890625,
+      "reward_efficiency": 0.6305527781745465,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1286,
+        "block": 707,
+        "human_review": 55
+      },
+      "time_seconds": 24.009527988004265,
+      "throughput_rows_per_second": 103049.08956294974,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 60,
+      "patience_used": 7,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 76,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 93328,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3739652588041287,
+      "average_reward": 1.0869140625,
+      "reward_efficiency": 0.6359091558348807,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1260,
+        "block": 737,
+        "human_review": 51
+      },
+      "time_seconds": 23.267961886012927,
+      "throughput_rows_per_second": 106333.33560200183,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 620339.0,
+        "average_reward": 1.0412827635985196,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.6009909963587253,
+        "policy_optimality": 0.7872243997012145,
+        "action_distribution": {
+          "allow": 315435,
+          "block": 254735,
+          "human_review": 25575
+        },
+        "evaluation_time_seconds": 7.526708499004599,
+        "throughput_rows_per_second": 79150.80012448826,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.2692081419942456,
+            "optimality": 0.8461387613294971
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.39522901885461176,
+            "optimality": 0.26348601256974113
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.0955901454797368,
+            "optimality": 0.5477950727398684
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4982641509433963,
+            "optimality": 0.9988427672955975
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7313543786984676,
+      "best_epoch": 60,
+      "patience_used": 8,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 77,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 94556,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3736718037811863,
+      "average_reward": 1.0860595703125,
+      "reward_efficiency": 0.6354092272532496,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1276,
+        "block": 727,
+        "human_review": 45
+      },
+      "time_seconds": 25.59746992800501,
+      "throughput_rows_per_second": 96656.42764534066,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 60,
+      "patience_used": 8,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 78,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 95784,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3760129551885571,
+      "average_reward": 1.067626953125,
+      "reward_efficiency": 0.6246250535637766,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1275,
+        "block": 706,
+        "human_review": 67
+      },
+      "time_seconds": 24.12367849299335,
+      "throughput_rows_per_second": 102561.47298259726,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 605707.75,
+        "average_reward": 1.0167231785411543,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5868160863248993,
+        "policy_optimality": 0.7850355437309587,
+        "action_distribution": {
+          "allow": 324595,
+          "block": 246668,
+          "human_review": 24482
+        },
+        "evaluation_time_seconds": 7.538660737016471,
+        "throughput_rows_per_second": 79025.30977084058,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3374888054724567,
+            "optimality": 0.8916592036483044
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.319585178942417,
+            "optimality": 0.21305678596161134
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 1.018939065927722,
+            "optimality": 0.509469532963861
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.4979622641509434,
+            "optimality": 0.9986415094339622
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7255697065091409,
+      "best_epoch": 60,
+      "patience_used": 9,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 79,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 97012,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.3756115844030334,
+      "average_reward": 1.0701904296875,
+      "reward_efficiency": 0.6261248393086702,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1285,
+        "block": 714,
+        "human_review": 49
+      },
+      "time_seconds": 25.0881154910021,
+      "throughput_rows_per_second": 98618.80621871987,
+      "validation": null,
+      "validation_score": null,
+      "best_epoch": 60,
+      "patience_used": 9,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": null
+    },
+    {
+      "epoch": 80,
+      "rows_seen": 2474160,
+      "dataset_rows": 3069905,
+      "validation_incidents": 69814,
+      "updates": 1228,
+      "total_updates": 98240,
+      "updates_per_epoch_full_pass": 1499,
+      "loss": 0.37477490868941193,
+      "average_reward": 1.0262451171875,
+      "reward_efficiency": 0.6004142265390658,
+      "sample_rows": 2048,
+      "sample_action_distribution": {
+        "allow": 1293,
+        "block": 692,
+        "human_review": 63
+      },
+      "time_seconds": 23.969469225994544,
+      "throughput_rows_per_second": 103221.30943628945,
+      "validation": {
+        "rows": 595745,
+        "incidents": 69814,
+        "total_reward": 572093.75,
+        "average_reward": 0.9602997087680132,
+        "oracle_average_reward": 1.7326095896734341,
+        "reward_efficiency": 0.5542504869484258,
+        "policy_optimality": 0.7728508002584998,
+        "action_distribution": {
+          "allow": 347888,
+          "block": 224263,
+          "human_review": 23594
+        },
+        "evaluation_time_seconds": 7.853537515009521,
+        "throughput_rows_per_second": 75856.8987365788,
+        "per_class": {
+          "BenignPositive": {
+            "rows": 209924,
+            "average_reward": 1.3240255997408585,
+            "optimality": 0.8826837331605724
+          },
+          "FalsePositive": {
+            "rows": 102044,
+            "average_reward": 0.603680765160127,
+            "optimality": 0.40245384344008467
+          },
+          "TruePositive": {
+            "rows": 277152,
+            "average_reward": 0.8033353538852327,
+            "optimality": 0.40166767694261635
+          },
+          "Unknown": {
+            "rows": 6625,
+            "average_reward": 1.494490566037736,
+            "optimality": 0.9963270440251573
+          }
+        },
+        "data_mode": "hard_alert_streaming",
+        "one_step_contextual": true
+      },
+      "validation_score": 0.7072707062654776,
+      "best_epoch": 60,
+      "patience_used": 10,
+      "improved": false,
+      "algorithm": "double_dqn",
+      "behavior_action_mode": "counterfactual_reward_matrix",
+      "data_mode": "hard_alert_streaming",
+      "one_step_contextual": true,
+      "representative_incident_training": false,
+      "stopping_reason": "validation_patience_exhausted"
+    }
+  ],
+  "best_epoch": 60,
+  "actual_epochs": 80,
+  "best_validation": {
+    "rows": 595745,
+    "incidents": 69814,
+    "total_reward": 620669.5,
+    "average_reward": 1.0418375311584656,
+    "oracle_average_reward": 1.7326095896734341,
+    "reward_efficiency": 0.6013111882607283,
+    "policy_optimality": 0.7905194336503034,
+    "action_distribution": {
+      "allow": 319049,
+      "block": 252639,
+      "human_review": 24057
+    },
+    "evaluation_time_seconds": 10.236095138010569,
+    "throughput_rows_per_second": 58200.4164642598,
+    "per_class": {
+      "BenignPositive": {
+        "rows": 209924,
+        "average_reward": 1.2972480516758447,
+        "optimality": 0.8648320344505631
+      },
+      "FalsePositive": {
+        "rows": 102044,
+        "average_reward": 0.38764160558190586,
+        "optimality": 0.2584277370546039
+      },
+      "TruePositive": {
+        "rows": 277152,
+        "average_reward": 1.0783396836393027,
+        "optimality": 0.5391698418196513
+      },
+      "Unknown": {
+        "rows": 6625,
+        "average_reward": 1.498188679245283,
+        "optimality": 0.9987924528301887
+      }
+    },
+    "data_mode": "hard_alert_streaming",
+    "one_step_contextual": true
+  },
+  "total_updates_used": 98240,
+  "max_total_updates": 5000000,
+  "stopping_reason": "validation_patience_exhausted"
+}

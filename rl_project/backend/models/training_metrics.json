@@ -1,0 +1,735 @@
+{
+  "config": {
+    "epochs": 50,
+    "batch_size": 512,
+    "learning_rate": 0.001,
+    "gamma": 0.95,
+    "features": [
+      "Category",
+      "MitreTechniques",
+      "ActionGrouped",
+      "ActionGranular",
+      "EntityType",
+      "EvidenceRole",
+      "ThreatFamily",
+      "OSFamily",
+      "SuspicionLevel",
+      "hour",
+      "day",
+      "month",
+      "is_weekend"
+    ],
+    "actions": {
+      "0": "allow",
+      "1": "block",
+      "2": "human_review"
+    },
+    "incident_id": "IncidentId",
+    "target": "IncidentGrade",
+    "synthetic_data": false,
+    "real_data": true,
+    "incident_level_episodes": true
+  },
+  "metrics": [
+    {
+      "epoch": 1,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 3.334768037225973,
+      "average_reward": 0.538920562223626,
+      "action_counts": {
+        "allow": 1849,
+        "block": 0,
+        "human_review": 314751
+      },
+      "time_seconds": 1.8503747430004296
+    },
+    {
+      "epoch": 2,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.4829893643713536,
+      "average_reward": 0.5404121920404296,
+      "action_counts": {
+        "allow": 0,
+        "block": 0,
+        "human_review": 316600
+      },
+      "time_seconds": 2.1256961890030652
+    },
+    {
+      "epoch": 3,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.4723721837477461,
+      "average_reward": 0.5404121920404296,
+      "action_counts": {
+        "allow": 0,
+        "block": 0,
+        "human_review": 316600
+      },
+      "time_seconds": 2.1448226689972216
+    },
+    {
+      "epoch": 4,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.43506987207540593,
+      "average_reward": 0.5404121920404296,
+      "action_counts": {
+        "allow": 0,
+        "block": 0,
+        "human_review": 316600
+      },
+      "time_seconds": 2.2133082789951004
+    },
+    {
+      "epoch": 5,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.38336379746628113,
+      "average_reward": 0.5404121920404296,
+      "action_counts": {
+        "allow": 0,
+        "block": 0,
+        "human_review": 316600
+      },
+      "time_seconds": 2.1290917079968494
+    },
+    {
+      "epoch": 6,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.3268181653708364,
+      "average_reward": 0.5404832596336071,
+      "action_counts": {
+        "allow": 171,
+        "block": 0,
+        "human_review": 316429
+      },
+      "time_seconds": 2.0553894819968264
+    },
+    {
+      "epoch": 7,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.3479066445869853,
+      "average_reward": 0.5404082438408085,
+      "action_counts": {
+        "allow": 0,
+        "block": 1,
+        "human_review": 316599
+      },
+      "time_seconds": 2.423929966003925
+    },
+    {
+      "epoch": 8,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.3891220166918149,
+      "average_reward": 0.5404121920404296,
+      "action_counts": {
+        "allow": 0,
+        "block": 0,
+        "human_review": 316600
+      },
+      "time_seconds": 2.2198426370014204
+    },
+    {
+      "epoch": 9,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.37571809543161283,
+      "average_reward": 0.5404161402400506,
+      "action_counts": {
+        "allow": 1,
+        "block": 0,
+        "human_review": 316599
+      },
+      "time_seconds": 2.8325253970033373
+    },
+    {
+      "epoch": 10,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.6070181018220011,
+      "average_reward": 0.6357398926089703,
+      "action_counts": {
+        "allow": 84040,
+        "block": 0,
+        "human_review": 232560
+      },
+      "time_seconds": 2.1680833189966506
+    },
+    {
+      "epoch": 11,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.683957111373279,
+      "average_reward": 0.7386994630448516,
+      "action_counts": {
+        "allow": 210271,
+        "block": 0,
+        "human_review": 106329
+      },
+      "time_seconds": 2.042547219003609
+    },
+    {
+      "epoch": 12,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.7807666158637631,
+      "average_reward": 0.7371825647504738,
+      "action_counts": {
+        "allow": 216522,
+        "block": 0,
+        "human_review": 100078
+      },
+      "time_seconds": 2.0299853940014145
+    },
+    {
+      "epoch": 13,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.9102631216095415,
+      "average_reward": 0.7420791219204043,
+      "action_counts": {
+        "allow": 213362,
+        "block": 0,
+        "human_review": 103238
+      },
+      "time_seconds": 2.007967423000082
+    },
+    {
+      "epoch": 14,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.9552484008337646,
+      "average_reward": 0.7464276689829438,
+      "action_counts": {
+        "allow": 209435,
+        "block": 0,
+        "human_review": 107165
+      },
+      "time_seconds": 2.079423922994465
+    },
+    {
+      "epoch": 15,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.9608752665881771,
+      "average_reward": 0.7455053695514845,
+      "action_counts": {
+        "allow": 213608,
+        "block": 0,
+        "human_review": 102992
+      },
+      "time_seconds": 2.081571912000072
+    },
+    {
+      "epoch": 16,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 0.9633298900477913,
+      "average_reward": 0.7454982627921668,
+      "action_counts": {
+        "allow": 216995,
+        "block": 0,
+        "human_review": 99605
+      },
+      "time_seconds": 2.062011728005018
+    },
+    {
+      "epoch": 17,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.0238080571656851,
+      "average_reward": 0.7460525900189514,
+      "action_counts": {
+        "allow": 213519,
+        "block": 0,
+        "human_review": 103081
+      },
+      "time_seconds": 2.0321414209975046
+    },
+    {
+      "epoch": 18,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.0407661059946545,
+      "average_reward": 0.7471541377132028,
+      "action_counts": {
+        "allow": 215124,
+        "block": 0,
+        "human_review": 101476
+      },
+      "time_seconds": 2.2666690109981573
+    },
+    {
+      "epoch": 19,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.0992239036737235,
+      "average_reward": 0.7475868603916614,
+      "action_counts": {
+        "allow": 213643,
+        "block": 0,
+        "human_review": 102957
+      },
+      "time_seconds": 2.4442608630051836
+    },
+    {
+      "epoch": 20,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.0346112537268484,
+      "average_reward": 0.7470712255211623,
+      "action_counts": {
+        "allow": 220198,
+        "block": 0,
+        "human_review": 96402
+      },
+      "time_seconds": 3.0299742720017093
+    },
+    {
+      "epoch": 21,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.0017480178102731,
+      "average_reward": 0.7482927984838913,
+      "action_counts": {
+        "allow": 223402,
+        "block": 11,
+        "human_review": 93187
+      },
+      "time_seconds": 2.64677971600031
+    },
+    {
+      "epoch": 22,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.0477619936662652,
+      "average_reward": 0.7508180669614656,
+      "action_counts": {
+        "allow": 219360,
+        "block": 2,
+        "human_review": 97238
+      },
+      "time_seconds": 2.5826868479998666
+    },
+    {
+      "epoch": 23,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.0254970379715398,
+      "average_reward": 0.7502432090966519,
+      "action_counts": {
+        "allow": 221410,
+        "block": 1,
+        "human_review": 95189
+      },
+      "time_seconds": 2.526689731996157
+    },
+    {
+      "epoch": 24,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.0304354669974578,
+      "average_reward": 0.7488802905874921,
+      "action_counts": {
+        "allow": 224298,
+        "block": 41,
+        "human_review": 92261
+      },
+      "time_seconds": 2.9628867149949656
+    },
+    {
+      "epoch": 25,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.1149166856135613,
+      "average_reward": 0.7517790587492104,
+      "action_counts": {
+        "allow": 219343,
+        "block": 34,
+        "human_review": 97223
+      },
+      "time_seconds": 3.1758900479981094
+    },
+    {
+      "epoch": 26,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.1161805424050868,
+      "average_reward": 0.7433472836386608,
+      "action_counts": {
+        "allow": 227957,
+        "block": 45,
+        "human_review": 88598
+      },
+      "time_seconds": 2.0277563460040255
+    },
+    {
+      "epoch": 27,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.0989841055215273,
+      "average_reward": 0.7454808907138345,
+      "action_counts": {
+        "allow": 227654,
+        "block": 45,
+        "human_review": 88901
+      },
+      "time_seconds": 2.0335009539994644
+    },
+    {
+      "epoch": 28,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.061890508227279,
+      "average_reward": 0.7443477574226153,
+      "action_counts": {
+        "allow": 227682,
+        "block": 50,
+        "human_review": 88868
+      },
+      "time_seconds": 2.055311759999313
+    },
+    {
+      "epoch": 29,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.1064713046508383,
+      "average_reward": 0.7504643082754264,
+      "action_counts": {
+        "allow": 224515,
+        "block": 70,
+        "human_review": 92015
+      },
+      "time_seconds": 2.016537903997232
+    },
+    {
+      "epoch": 30,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.073614438920491,
+      "average_reward": 0.7521043903979785,
+      "action_counts": {
+        "allow": 225856,
+        "block": 288,
+        "human_review": 90456
+      },
+      "time_seconds": 2.0225941620010417
+    },
+    {
+      "epoch": 31,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.12671670457273,
+      "average_reward": 0.7438226468730259,
+      "action_counts": {
+        "allow": 229057,
+        "block": 731,
+        "human_review": 86812
+      },
+      "time_seconds": 2.02978554800211
+    },
+    {
+      "epoch": 32,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.2044664099451414,
+      "average_reward": 0.7490105811749842,
+      "action_counts": {
+        "allow": 225627,
+        "block": 1442,
+        "human_review": 89531
+      },
+      "time_seconds": 2.0714154739980586
+    },
+    {
+      "epoch": 33,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.2021430701932152,
+      "average_reward": 0.7193832912192041,
+      "action_counts": {
+        "allow": 236365,
+        "block": 490,
+        "human_review": 79745
+      },
+      "time_seconds": 2.0187227690039435
+    },
+    {
+      "epoch": 34,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.1122097535741926,
+      "average_reward": 0.7272023057485787,
+      "action_counts": {
+        "allow": 234984,
+        "block": 825,
+        "human_review": 80791
+      },
+      "time_seconds": 2.019232368998928
+    },
+    {
+      "epoch": 35,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.156276540243953,
+      "average_reward": 0.7401879343019583,
+      "action_counts": {
+        "allow": 231532,
+        "block": 716,
+        "human_review": 84352
+      },
+      "time_seconds": 2.0213722629996482
+    },
+    {
+      "epoch": 36,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.1827116815647132,
+      "average_reward": 0.7516590334807328,
+      "action_counts": {
+        "allow": 227027,
+        "block": 1080,
+        "human_review": 88493
+      },
+      "time_seconds": 2.0255760210056906
+    },
+    {
+      "epoch": 37,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.1970205384040302,
+      "average_reward": 0.7529358812381554,
+      "action_counts": {
+        "allow": 226998,
+        "block": 288,
+        "human_review": 89314
+      },
+      "time_seconds": 2.0318535179976607
+    },
+    {
+      "epoch": 38,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.2371742563602035,
+      "average_reward": 0.7416084965255844,
+      "action_counts": {
+        "allow": 230223,
+        "block": 626,
+        "human_review": 85751
+      },
+      "time_seconds": 2.0146350630020606
+    },
+    {
+      "epoch": 39,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.1558493727243389,
+      "average_reward": 0.7423144346178143,
+      "action_counts": {
+        "allow": 231858,
+        "block": 812,
+        "human_review": 83930
+      },
+      "time_seconds": 2.050771011003235
+    },
+    {
+      "epoch": 40,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.2144792656713619,
+      "average_reward": 0.7102203095388503,
+      "action_counts": {
+        "allow": 238767,
+        "block": 414,
+        "human_review": 77419
+      },
+      "time_seconds": 2.0777353390003555
+    },
+    {
+      "epoch": 41,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.2188737899883497,
+      "average_reward": 0.6960533796588756,
+      "action_counts": {
+        "allow": 241074,
+        "block": 730,
+        "human_review": 74796
+      },
+      "time_seconds": 2.053701299999375
+    },
+    {
+      "epoch": 42,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.2027280039856623,
+      "average_reward": 0.6929564118761845,
+      "action_counts": {
+        "allow": 241910,
+        "block": 512,
+        "human_review": 74178
+      },
+      "time_seconds": 2.0390543959947536
+    },
+    {
+      "epoch": 43,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.1697187995679543,
+      "average_reward": 0.6810154769425142,
+      "action_counts": {
+        "allow": 243828,
+        "block": 535,
+        "human_review": 72237
+      },
+      "time_seconds": 2.0248427350015845
+    },
+    {
+      "epoch": 44,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.228131100318736,
+      "average_reward": 0.6897954832596336,
+      "action_counts": {
+        "allow": 242067,
+        "block": 929,
+        "human_review": 73604
+      },
+      "time_seconds": 2.020888883002044
+    },
+    {
+      "epoch": 45,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.2319169664614036,
+      "average_reward": 0.7112397346809854,
+      "action_counts": {
+        "allow": 238261,
+        "block": 743,
+        "human_review": 77596
+      },
+      "time_seconds": 2.066621218000364
+    },
+    {
+      "epoch": 46,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.2242569318688166,
+      "average_reward": 0.692285217940619,
+      "action_counts": {
+        "allow": 241994,
+        "block": 959,
+        "human_review": 73647
+      },
+      "time_seconds": 2.032728054000472
+    },
+    {
+      "epoch": 47,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.2609493848965512,
+      "average_reward": 0.7235154769425142,
+      "action_counts": {
+        "allow": 235957,
+        "block": 530,
+        "human_review": 80113
+      },
+      "time_seconds": 2.0220957660058048
+    },
+    {
+      "epoch": 48,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.200593248418922,
+      "average_reward": 0.696895135818067,
+      "action_counts": {
+        "allow": 241497,
+        "block": 572,
+        "human_review": 74531
+      },
+      "time_seconds": 2.029313503000594
+    },
+    {
+      "epoch": 49,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.2503191211497071,
+      "average_reward": 0.7151342387871131,
+      "action_counts": {
+        "allow": 237778,
+        "block": 745,
+        "human_review": 78077
+      },
+      "time_seconds": 2.0577743539979565
+    },
+    {
+      "epoch": 50,
+      "rows": 316600,
+      "incidents": 128252,
+      "updates": 619,
+      "loss": 1.26827039375829,
+      "average_reward": 0.7310936512950095,
+      "action_counts": {
+        "allow": 233775,
+        "block": 595,
+        "human_review": 82230
+      },
+      "time_seconds": 2.037366288001067
+    }
+  ]
+}

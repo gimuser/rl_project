@@ -1,0 +1,43 @@
+{
+  "test_rows": 84726,
+  "test_incidents": 32064,
+  "total_reward": 62154.75,
+  "average_reward": 0.7335971248495149,
+  "optimal_possible_reward": 145483.5,
+  "reward_regret": 83328.75,
+  "reward_efficiency": 0.42722886100485624,
+  "policy_optimality": 0.38676439345655406,
+  "evaluation_time_seconds": 23.40112078600214,
+  "average_latency_ms_per_row": 0.27619763456320534,
+  "throughput_rows_per_second": 3620.595815679076,
+  "action_distribution": {
+    "allow": 41462,
+    "block": 0,
+    "human_review": 43264
+  },
+  "per_class": {
+    "BenignPositive": {
+      "rows": 31728,
+      "average_reward": 1.1923064800806857,
+      "optimality": 0.7948709867204572
+    },
+    "FalsePositive": {
+      "rows": 15647,
+      "average_reward": 0.9153032530197482,
+      "optimality": 0.6102021686798321
+    },
+    "TruePositive": {
+      "rows": 36789,
+      "average_reward": 0.251651308815135,
+      "optimality": 0.1258256544075675
+    },
+    "Unknown": {
+      "rows": 562,
+      "average_reward": 1.3265124555160142,
+      "optimality": 0.8843416370106761
+    }
+  },
+  "timestamp_column": "Timestamp",
+  "synthetic_data": false,
+  "unseen_incidents": true
+}

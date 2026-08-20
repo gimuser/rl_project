@@ -1,0 +1,41 @@
+{
+  "rows": 2413711,
+  "incidents": 236267,
+  "total_reward": 2324312.0,
+  "average_reward": 0.962962011607852,
+  "oracle_average_reward": 1.7365670538022158,
+  "reward_efficiency": 0.5545204888572804,
+  "policy_optimality": 0.7687229332757732,
+  "action_distribution": {
+    "allow": 1315140,
+    "block": 1029153,
+    "human_review": 69418
+  },
+  "evaluation_time_seconds": 7.882177853985922,
+  "throughput_rows_per_second": 306223.8691784169,
+  "per_class": {
+    "BenignPositive": {
+      "rows": 822092,
+      "average_reward": 1.2734575327335627,
+      "optimality": 0.8489716884890418
+    },
+    "FalsePositive": {
+      "rows": 449610,
+      "average_reward": 0.36928171081604055,
+      "optimality": 0.24618780721069372
+    },
+    "TruePositive": {
+      "rows": 1142009,
+      "average_reward": 0.9731797210004475,
+      "optimality": 0.48658986050022374
+    }
+  },
+  "data_mode": "hard_alert_streaming",
+  "one_step_contextual": true,
+  "run_id": "94277407b6c24816afdc0d340a2fbe36",
+  "algorithm": "double_dqn",
+  "model_name": "Double DQN",
+  "model_version": "Double DQN-20260818T230008Z-627be50fcf",
+  "test_used_for_selection": false,
+  "test_is_unseen_incident_holdout": true
+}
