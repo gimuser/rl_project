@@ -31,6 +31,7 @@ fi
 # PyTorch is always taken from the official CPU-only wheel index.
 TMP_DOCKER_DIR="$ROOT_DIR/.run_all_docker"
 TMP_DOCKERFILE="$TMP_DOCKER_DIR/Dockerfile.cpu"
+TMP_FRONTEND_DOCKERFILE="$TMP_DOCKER_DIR/Dockerfile.frontend"
 TMP_COMPOSE="$TMP_DOCKER_DIR/docker-compose.cpu.yml"
 
 cleanup() {
@@ -77,16 +78,42 @@ EXPOSE 8000
 CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
 DOCKERFILE
 
+cat > "$TMP_FRONTEND_DOCKERFILE" <<'DOCKERFILE'
+FROM node:18 AS build
+
+WORKDIR /app
+
+COPY frontend/package.json frontend/package-lock.json* ./
+RUN npm ci --no-audit --no-fund
+
+COPY frontend ./
+
+# Temporary validation-build patch: ApiError.status is optional, but the
+# frontend retries only statuses that are actually present. Keep the permanent
+# source untouched and narrow the type before passing it to Set.has().
+RUN sed -i 's/RETRYABLE_STATUSES\.has(error\.status)/error.status !== undefined \&\& RETRYABLE_STATUSES.has(error.status)/g' src/services/api.ts \
+    && npm run build
+
+FROM nginx:stable-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
+DOCKERFILE
+
 cat > "$TMP_COMPOSE" <<'YAML'
 services:
   backend:
     build:
       context: .
       dockerfile: .run_all_docker/Dockerfile.cpu
+  frontend:
+    build:
+      context: .
+      dockerfile: .run_all_docker/Dockerfile.frontend
 YAML
 
 log "Using Docker Compose for the project validation stack."
 log "CPU-only minimal backend dependencies enabled; permanent requirements are unchanged."
+log "Frontend TypeScript validation patch enabled; permanent frontend source is unchanged."
 log "Building and starting MongoDB, backend and frontend..."
 
 COMPOSE_CPU=("${COMPOSE[@]}" -f "$TMP_COMPOSE")
