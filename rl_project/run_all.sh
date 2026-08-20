@@ -25,9 +25,8 @@ else
   die "Docker Compose is required."
 fi
 
-# Select host ports BEFORE docker compose up. This is important because
-# Compose must bind the host port while creating the container; discovering
-# the port after `up` is too late when the default port is already occupied.
+# Select host ports BEFORE docker compose up. Compose must bind the host port
+# while creating the container, so discovering the port after `up` is too late.
 port_in_use() {
   local port="$1"
 
@@ -52,7 +51,9 @@ find_free_port() {
   [[ "$port" =~ ^[0-9]+$ ]] || die "Invalid port: $requested"
 
   while port_in_use "$port"; do
-    log "Host port ${port} is already in use; trying ${port}+1."
+    # IMPORTANT: log to stderr because this function is used in command
+    # substitution. stdout must contain ONLY the numeric port value.
+    printf '[RL] Host port %s is already in use; trying %s+1.\n' "$port" "$port" >&2
     port=$((port + 1))
     [[ "$port" -le 65535 ]] || die "No free host port found starting from ${requested}."
   done
