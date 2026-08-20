@@ -27,7 +27,7 @@ fi
 
 # Build the backend with a temporary CPU-only Dockerfile/Compose override.
 # The permanent requirements.txt and Dockerfile are deliberately not changed.
-# The backend image installs only runtime dependencies needed by this project;
+# The validation image installs only the runtime dependencies used by this app;
 # PyTorch is always taken from the official CPU-only wheel index.
 TMP_DOCKER_DIR="$ROOT_DIR/.run_all_docker"
 TMP_DOCKERFILE="$TMP_DOCKER_DIR/Dockerfile.cpu"
@@ -48,7 +48,6 @@ WORKDIR /app
 
 # Minimal CPU-only backend dependencies. Do not install from the repository
 # requirements file here: it is intentionally decoupled from the validation image.
-COPY /dev/null /tmp/requirements.cpu.txt
 RUN printf '%s\n' \
     'fastapi' \
     'uvicorn' \
