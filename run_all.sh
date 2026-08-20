@@ -5,10 +5,10 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
 COMPOSE_FILE="${COMPOSE_FILE:-$ROOT_DIR/docker-compose.yml}"
-FRONTEND_PORT="${FRONTEND_PORT:-5173}"
-BACKEND_PORT="${BACKEND_PORT:-8000}"
-FRONTEND_URL="http://127.0.0.1:${FRONTEND_PORT}"
-BACKEND_URL="http://127.0.0.1:${BACKEND_PORT}"
+FRONTEND_PORT="${FRONTEND_PORT:-}"
+BACKEND_PORT="${BACKEND_PORT:-}"
+FRONTEND_URL=""
+BACKEND_URL=""
 
 log() { printf '[RL] %s\n' "$1"; }
 die() { printf '\n[RL] ERROR: %s\n' "$1" >&2; exit 1; }
@@ -118,6 +118,34 @@ log "Building and starting MongoDB, backend and frontend..."
 
 COMPOSE_CPU=("${COMPOSE[@]}" -f "$TMP_COMPOSE")
 "${COMPOSE_CPU[@]}" up -d --build || die "Docker Compose failed to build/start the project."
+
+# Resolve the actual published host ports from Compose instead of assuming them.
+# This avoids false readiness failures when docker-compose.yml uses different defaults.
+resolve_published_port() {
+  local service="$1"
+  local container_port="$2"
+  local value=""
+
+  value=$("${COMPOSE_CPU[@]}" port "$service" "$container_port" 2>/dev/null | head -n 1 | awk -F: '{print $NF}' || true)
+  [[ "$value" =~ ^[0-9]+$ ]] || return 1
+  printf '%s' "$value"
+}
+
+if [[ -z "$BACKEND_PORT" ]]; then
+  BACKEND_PORT="$(resolve_published_port backend 8000 || true)"
+fi
+if [[ -z "$FRONTEND_PORT" ]]; then
+  FRONTEND_PORT="$(resolve_published_port frontend 80 || true)"
+fi
+
+[[ "$BACKEND_PORT" =~ ^[0-9]+$ ]] || die "Could not determine the published backend port from Docker Compose."
+[[ "$FRONTEND_PORT" =~ ^[0-9]+$ ]] || die "Could not determine the published frontend port from Docker Compose."
+
+BACKEND_URL="http://127.0.0.1:${BACKEND_PORT}"
+FRONTEND_URL="http://127.0.0.1:${FRONTEND_PORT}"
+
+log "Resolved backend port: ${BACKEND_PORT}"
+log "Resolved frontend port: ${FRONTEND_PORT}"
 
 wait_for_url() {
   local url="$1"
