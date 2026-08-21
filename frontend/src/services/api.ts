@@ -58,7 +58,11 @@ export async function apiRequest<T>(
       return (await response.json()) as T;
     } catch (error) {
       if (error instanceof ApiError) {
-        if (RETRYABLE_STATUSES.has(error.status) && attempt < maxAttempts) {
+        if (
+          error.status !== undefined &&
+          RETRYABLE_STATUSES.has(error.status) &&
+          attempt < maxAttempts
+        ) {
           lastError = error;
           await new Promise((resolve) => window.setTimeout(resolve, 500 * attempt));
           continue;

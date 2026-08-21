@@ -4,8 +4,8 @@ services:
     restart: unless-stopped
     volumes:
       - mongo_data:/data/db
-    # Do not bind Mongo to the host interface by default to avoid port conflicts.
-    # Backend connects to the mongo service via the Compose network (mongodb://mongo:27017).
+    # Mongo stays internal to the Compose network.
+    # Backend connects through mongodb://mongo:27017.
 
   backend:
     build:
@@ -25,7 +25,7 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
     ports:
-      - "127.0.0.1:${FRONTEND_PORT:-8081}:80"
+      - "127.0.0.1:${FRONTEND_PORT:-5173}:80"
     environment:
       NODE_ENV: "production"
     depends_on:
